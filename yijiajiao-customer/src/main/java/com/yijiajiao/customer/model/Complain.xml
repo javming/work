@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yijiajiao.customer.dao.ComplainDAO">
+
+
+
+	<!--查询满足条件的用户列表 -->
+	<select id="getComplainList" parameterType="com.yijiajiao.customer.bean.ComplainBean"
+		resultType="com.yijiajiao.customer.model.Complain">
+		select * from
+		complain
+		<where>
+			<if test="status!=null">
+				complain.status =#{status}
+			</if>
+			<if test="order_number!=null">
+				and complain.order_number=#{order_number}
+			</if>
+		</where>
+
+		order by trading_time desc 
+		<!--<if test="startRow!=null and startRow!=''"> 当startRow=0时 这个判断不会进入所以改成下面的
+			limit #{startRow},#{pageSize}
+		</if>-->
+		<if test="startRow!=null and startRow!='' or startRow==0">
+			limit #{startRow},#{pageSize}
+		</if>
+	</select>
+
+
+
+	<!-- 查询总条数 -->
+	<select id="getCount" parameterType="com.yijiajiao.customer.bean.ComplainBean"
+		resultType="Integer">
+		select count(*) from complain
+		<where>
+			<if test="status!=null">
+				status =#{status}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getComplainById" parameterType="String"
+		resultType="com.yijiajiao.customer.model.Complain">
+		select * from
+		complain
+		where complain.id =#{id}
+	</select>
+
+	<update id="updateComplain" parameterType="com.yijiajiao.customer.model.Complain">
+		update complain set
+		reply=#{reply},status=#{status},operator_person=#{operator_person},operator_date=#{operator_date}
+		where id=#{id}
+	</update>
+	<insert id="insertComplain" parameterType="com.yijiajiao.customer.model.Complain"  useGeneratedKeys="true">
+		insert into complain(order_number,complainant_number,the_complainant,order_info,trading_time,complainant_reason,operator_person
+		,trading_person,operator_date) values(#{order_number},#{complainant_number},#{the_complainant},#{order_info},#{trading_time},
+		#{complainant_reason},#{operator_person},#{trading_person},#{operator_date});
+	</insert>
+	
+</mapper>
+

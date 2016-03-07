@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yijiajiao.customer.dao.CustomerServicesDAO">
+
+
+	<!-- 查询总条数 -->
+	<select id="getCount" parameterType="com.yijiajiao.customer.bean.CustomerBean"
+		resultType="Integer">
+		select count(*) from customer
+		<where>
+			<if test="status!=null">
+				status =#{status}
+			</if>
+			<if test="phone!=null">
+				and phone =#{phone}
+			</if>
+		</where>
+	</select>
+
+
+	<!--查询满足条件的用户列表 -->
+	<select id="getCustomerList" parameterType="com.yijiajiao.customer.bean.CustomerBean"
+		resultType="com.yijiajiao.customer.model.Customer">
+		select *
+		from
+		customer
+		<where>
+			<if test="status!=null">
+				status =#{status}
+			</if>
+			
+			<if test="phone!=null">
+				and phone =#{phone}
+			</if>
+		</where>
+		order by counseling_time desc 
+		<if test="startRow!=null and startRow!='' or startRow==0">
+			limit #{startRow},#{pageSize}
+		</if>
+	</select>
+
+
+
+
+
+	<select id="getCustomerById" parameterType="String"
+		resultType="com.yijiajiao.customer.model.Customer">
+		select *
+		from
+		customer
+		where customer.id =#{id}
+	</select>
+
+
+	<update id="updateCustomer" parameterType="com.yijiajiao.customer.model.Customer">
+		update
+		customer set status=#{status},reply=#{reply},operator_date=#{operator_date},operator=#{operator},result=#{result}
+		where customer.id =#{id}
+	</update>
+	
+	<insert id="insertCustomer" parameterType="com.yijiajiao.customer.model.Customer" useGeneratedKeys="true">
+		insert into customer(counseling,phone,role_id,role_name,user_name,open_id,counseling_time) 
+		values(#{counseling},#{phone},#{role_id},#{role_name},#{user_name},#{open_id},#{counseling_time})
+	</insert>
+
+</mapper>
+
