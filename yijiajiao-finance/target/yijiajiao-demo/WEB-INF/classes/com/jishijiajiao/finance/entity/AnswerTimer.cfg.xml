@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jishijiajiao.finance.dao.IAnswerTimerDAO">
+    
+    <resultMap type="com.jishijiajiao.finance.entity.AnswerTimer" id="resultAnswerTimer">
+        <id property="id" column="id" />
+        <result property="openId" column="open_id" />
+        <result property="remainTime" column="remain_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+    
+    <select id="queryAnswerTimerByOpenId" parameterType="String" resultMap="resultAnswerTimer">
+        select * from answer_timer where open_id=#{openId};
+    </select>
+    <insert id="saveAnswerTimer" parameterType="com.jishijiajiao.finance.entity.AnswerTimer" useGeneratedKeys="true">
+    	insert into answer_timer(open_id,remain_time,update_time) 
+    	values(#{openId},#{remainTime},#{updateTime});
+    </insert>
+	<update id="updateAnswerTimer" parameterType="com.jishijiajiao.finance.entity.AnswerTimer">
+		update answer_timer set remain_time=#{remainTime},update_time=#{updateTime} where open_id=#{openId};
+	</update>
+
+</mapper>
+

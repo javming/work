@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jishijiajiao.finance.dao.IBatchPayDetailDAO">
+	<resultMap type="com.jishijiajiao.finance.entity.BatchPayDetail" id="resultBatchPayDetail">
+		<id property="id" column="id"/>
+		<result property="running_no" column="running_no"/>
+		<result property="proceeds_account" column="proceeds_account"/>
+		<result property="proceeds_name" column="proceeds_name"/>
+		<result property="proceeds_fee" column="proceeds_fee"/>
+		<result property="remark" column="remark"/>
+		<result property="batch_no" column="batch_no"/>
+	</resultMap>
+	
+	<insert id="insertBatchPayDetail" parameterType="com.jishijiajiao.finance.entity.BatchPayDetail" useGeneratedKeys="true">
+		insert into batch_pay_detail(running_no,proceeds_account,proceeds_name,proceeds_fee,remark,batch_no) values(#{running_no},#{proceeds_account},
+		#{proceeds_name},#{proceeds_fee},#{remark},#{batch_no});
+	</insert>
+
+</mapper>

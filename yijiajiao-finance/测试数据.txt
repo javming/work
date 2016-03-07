@@ -1,0 +1,157 @@
+﻿1、测试添加答疑时长
+http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/orderFinanceLog
+{
+ "openId":"1f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "tradeTime":"2016-01-20 16:15:00",
+ "timeChange":100.0,
+ "orderNumber":"160121104248912922",
+ "commodityId":"198",
+ "commodityType":2,
+ "curriculumName":"答疑时长",
+ "totalPrice":100.0,
+ "tradeType":1,
+ "accountNumber":"92354864@qq.com"
+}
+2、测试消费答疑时长
+http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/consumeAnswerTime
+{
+ "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "timeChange":10.0,
+ "solutionId":5
+}
+
+3、测试添加购买课程
+http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/orderFinanceLog
+{
+ "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "sellOpenId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "tradeTime":"2016-01-20 16:15:00",
+ "orderNumber":"160121104248912925",
+ "commodityId":"155",
+ "commodityType":1,
+ "curriculumName":"一对一课",
+ "curriculumInfo":"高中物理",
+ "curriculumType":1,
+ "teachMode":0,
+ "totalPrice":100.0,
+ "tradeType":1,
+ "accountNumber":"92354864@qq.com"
+}
+
+4.测试每日结算
+http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/dailySettleAccount
+[
+{
+ "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "sellOpenId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "orderNumber":"12121212131415926",
+ "commodityId":"12121212131415926",
+ "waresId":1,
+ "slaveId":4,
+ "settleMoney":5.0,
+ "startTime":1453279381000,
+ "endTime":1453279381000,
+ "curriculumInfo":"这节课主要内容讲的是岳飞惨死风波亭" 
+},
+{
+ "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "sellOpenId":"1f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "orderNumber":"12121212131415926",
+ "commodityId":"12121212131415926",
+ "waresId":1,
+ "slaveId":4,
+ "settleMoney":5.0,
+ "startTime":1453279381000,
+ "endTime":1453279381000,
+ "curriculumInfo":"这节课主要内容讲的是岳飞惨死风波亭" 
+},
+{
+ "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "sellOpenId":"6f7efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "orderNumber":"12121212131415926",
+ "commodityId":"12121212131415926",
+ "waresId":1,
+ "slaveId":4,
+ "settleMoney":10000.0,
+ "startTime":1453279381000,
+ "endTime":1453279381000,
+ "curriculumInfo":"这节课主要内容讲的是岳飞惨死风波亭" 
+}
+]
+
+5、测试退款
+http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/refundMoney
+{
+ "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "sellOpenId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+ "orderNumber":"160121104248912925",
+ "commodityId":"155",
+ "curriculumName":"一对一课",
+ "curriculumInfo":"高中物理",
+ "totalPrice":75.0,
+ "accountNumber":"92354864@qq.com",
+ "waresSlaves":[
+	{
+		"waresId":1,
+		"slaveId":2,
+		"startTime":"2016-01-28 14:00:00",
+		"endTime":"2016-01-28 15:00:00" 
+	},
+    {
+        "waresId":1,
+        "slaveId":3,
+        "startTime":"2016-01-20 15:00:00",
+        "endTime":"2016-01-20 16:00:00" 
+    },
+    {
+        "waresId":1,
+        "slaveId":4,
+        "startTime":"2016-01-28 16:00:00",
+        "endTime":"2016-01-28 17:00:00" 
+    }
+   ]
+}
+
+
+6、测试账户提现
+http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/withdrawsCash
+{
+"openId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+"teacherOutput":5.5
+}
+
+
+停止jetty     bin/jetty.sh stop
+
+启动jetty     bin/jetty.sh start
+
+提交修改MySQL数据库信息
+	1、修改localhost
+	修改mysql库中的user表
+	然后 flush privileges;
+	
+4.启动vi编辑器
+mkdir+目录名  （新建目录）
+
+vi +文件名.c  文件名指定需要进行编辑的文件。在默认的情况下，若指定的文件存在，则打开该文件；若指定的文件不存在，则新建空白文件。
+i（表示插入）
+esc 退出编辑
+
+ 
+
+5 .vi的命令
+
+文件保存与退出：
+：q  在文件未作任何修改的情况下退出。
+：q! 强制退出，不保存对文件所作的修改。
+：wq 保存对文件所作的修改并退出。
+：w 保存文件。
+
+ls 查看文件
+
+ </bean>  
+ <bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">  
+     <property name="mapperInterface" value="com.springMyBatis.system.dao.UserDao"></property>  
+     <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>  
+ </bean>
+
