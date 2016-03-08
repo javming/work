@@ -60,8 +60,8 @@
 	</update>
 	
 	<insert id="insertCustomer" parameterType="com.yijiajiao.customer.model.Customer" useGeneratedKeys="true">
-		insert into customer(counseling,phone,role_id,role_name,user_name,open_id,counseling_time) 
-		values(#{counseling},#{phone},#{role_id},#{role_name},#{user_name},#{open_id},#{counseling_time})
+		insert into customer(counseling,phone,role_id,role_name,user_name,open_id,counseling_time,status) 
+		values(#{counseling},#{phone},#{role_id},#{role_name},#{user_name},#{open_id},#{counseling_time},#{status})
 	</insert>
 
 </mapper>

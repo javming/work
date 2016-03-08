@@ -56,8 +56,8 @@
 	</update>
 	<insert id="insertComplain" parameterType="com.yijiajiao.customer.model.Complain"  useGeneratedKeys="true">
 		insert into complain(order_number,complainant_number,the_complainant,order_info,trading_time,complainant_reason,operator_person
-		,trading_person,operator_date) values(#{order_number},#{complainant_number},#{the_complainant},#{order_info},#{trading_time},
-		#{complainant_reason},#{operator_person},#{trading_person},#{operator_date});
+		,trading_person,operator_date,status) values(#{order_number},#{complainant_number},#{the_complainant},#{order_info},#{trading_time},
+		#{complainant_reason},#{operator_person},#{trading_person},#{operator_date},#{status});
 	</insert>
 	
 </mapper>

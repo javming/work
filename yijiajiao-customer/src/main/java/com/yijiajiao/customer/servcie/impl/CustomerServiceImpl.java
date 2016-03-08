@@ -109,6 +109,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public int addCustomer(Customer customerServices) {
 		try {
 			customerServices.setCounseling_time(new Date());
+			customerServices.setStatus("0");
 			int customer = customedao.insertCustomer(customerServices);
 			return customer;
 		} catch (Exception e) {

@@ -109,6 +109,7 @@ public class ComplainServiceImpl implements ComplainService {
 	public int addComplain(Complain complain) {
 		complain.setOperator_date(new Date());
 		complain.setTrading_time(new Date());
+		complain.setStatus("0");
 		int insertComplain;
 		try {
 			insertComplain = complainDAO.insertComplain(complain);
