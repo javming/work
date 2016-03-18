@@ -9,9 +9,10 @@ import java.util.Date;
 public class MoneyTimer implements Serializable {
 	private int id;
 	private String openId;
-	private double variableMoney = 0.0;
-	private double withdrawalCash = 0.0;
-	private double totalMoney = 0.0;
+	private double variableMoney = 0.0;//浮动金额，可能退款
+	private double withdrawalCash = 0.0;//本期可提现金额
+	private double totalMoney = 0.0;//总金额
+	private double totalSettleMoney=0.0;//收入总金额(包括已提现的和本期可提现的金额)
 	private String updateTime;
 	public int getId() {
 		return id;
@@ -49,12 +50,20 @@ public class MoneyTimer implements Serializable {
 	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
 	}
+	
+	public double getTotalSettleMoney() {
+		return totalSettleMoney;
+	}
+	public void setTotalSettleMoney(double totalSettleMoney) {
+		this.totalSettleMoney = totalSettleMoney;
+	}
 	@Override
 	public String toString() {
 		return "MoneyTimer [id=" + id + ", openId=" + openId
 				+ ", variableMoney=" + variableMoney + ", withdrawalCash="
 				+ withdrawalCash + ", totalMoney=" + totalMoney
-				+ ", updateTime=" + updateTime + "]";
+				+ ", totalSettleMoney=" + totalSettleMoney + ", updateTime="
+				+ updateTime + "]";
 	}
-
+	
 }

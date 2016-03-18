@@ -45,7 +45,13 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 			int running = 1000;
 			for(BatchPayDetail bpd :batchPayDetails){
 				bpd.setBatch_no(batch_no);
-				bpd.setRunning_no(DateUtil.getNowTime("MMddhhmmss")+running);//生成流水号
+				//bpd.setRunning_no(DateUtil.getNowTime("MMddhhmmss")+running);//生成流水号
+				boolean is_insert=bpd.getRunning_no() ==null || "".equals(bpd.getRunning_no())||bpd.getProceeds_account() == null || "".equals(bpd.getProceeds_account())
+						||bpd.getProceeds_fee()==0||"".equals(bpd.getProceeds_fee())|| bpd.getProceeds_name()==null || "".equals(bpd.getProceeds_name())||bpd.getRemark()==null || "".equals(bpd.getRemark());
+				if(is_insert){
+					this.resultBean.setFailMsg(SystemStatus.BATCH_DETAIL_ERROR);
+					return this.resultBean;
+				}
 				if(detail_data.length()>0){
 					detail_data.append("|"+bpd.getPayString());		
 				}else{

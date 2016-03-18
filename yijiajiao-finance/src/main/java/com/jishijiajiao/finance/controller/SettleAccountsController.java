@@ -13,20 +13,22 @@ import org.springframework.stereotype.Controller;
 
 import com.jishijiajiao.finance.bean.ResultMapper;
 import com.jishijiajiao.finance.entity.DailySettleAccounts;
-import com.jishijiajiao.finance.service.IDailySettleAccountsService;
+import com.jishijiajiao.finance.service.ISettleAccountsService;
 
 @Controller
-@Path("/dailysettle")
-public class DailySettleAccountsController {
+@Path("/settleaccounts")
+public class SettleAccountsController {
 	@Autowired
-	private IDailySettleAccountsService dailySettleAccountsService;
+	private ISettleAccountsService settleAccountsService;
 	
 	@POST
-	@Path("/dailyadd")
+	@Path("/dailysettle")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResultMapper addDailySettleAccounts(List<DailySettleAccounts> dailySettleAccounts){
-		return dailySettleAccountsService.addDailySettleAccounts(dailySettleAccounts);
+		return settleAccountsService.addDailySettleAccounts(dailySettleAccounts);
 	}
-
+	
+	
+	
 }

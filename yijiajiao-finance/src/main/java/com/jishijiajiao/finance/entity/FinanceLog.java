@@ -17,8 +17,6 @@ public class FinanceLog implements Serializable {
 	private Integer curriculumType;// 课程类型(0直播课(小班课) 1一对一课 2 视频课)
 	private String curriculumInfo;//课程描述
 	private Integer teachMode;// 表示一对一教学方式(0线上 1线下)
-	private Integer slaveId; // 每一小节课的标识
-	private String slaveIds;// 拼接slaveid成的字符串，用于存储退款时小节课的slaveid
 	private Double totalPrice;// 金额
 	private Integer tradeType;// 交易类型 支付宝 微信 网银
 	private String accountNumber;// 交易账户 包括支付、退款和提现
@@ -29,18 +27,10 @@ public class FinanceLog implements Serializable {
 	private Double variableMoneyChange = 0.0;// 可变的金额变化值(主要涉及到退款的部分)
 	private Double withdrawalCashChange = 0.0;// 可提现的金额变化值
 	private Double teacherOutput = 0.0;// 老师转出的金额
-	private int financeLogsType;// 财务记录类型(1订单 2退款  3消费答疑 4账户提现)
+	private int financeLogsType;// 财务记录类型(1订单 2退款  3消费答疑 4账户提现(每月15日发上个月工资))
 	private Integer openIdIsdel = 0;// 消费者（主要学生）删除 1表示删除 0表示显示
 	private Integer sellOpenIdIsdel = 0;// 销售者（主要是教师）是否删除 0否 1删除
 	private List<WaresSlave> waresSlaves = new ArrayList<WaresSlave>();//主要用于接收退款时每小节课的信息
-
-	public String getSlaveIds() {
-		return slaveIds;
-	}
-
-	public void setSlaveIds(String slaveIds) {
-		this.slaveIds = slaveIds;
-	}
 
 	public Integer getId() {
 		return id;
@@ -128,14 +118,6 @@ public class FinanceLog implements Serializable {
 
 	public void setTeachMode(Integer teachMode) {
 		this.teachMode = teachMode;
-	}
-
-	public Integer getSlaveId() {
-		return slaveId;
-	}
-
-	public void setSlaveId(Integer slaveId) {
-		this.slaveId = slaveId;
 	}
 
 	public Double getTotalPrice() {
@@ -275,7 +257,7 @@ public class FinanceLog implements Serializable {
 				+ orderNumber + ", commodityId=" + commodityId
 				+ ", commodityType=" + commodityType + ", curriculumName="
 				+ curriculumName + ", curriculumType=" + curriculumType
-				+ ", teachMode=" + teachMode + ", slaveId=" + slaveId
+				+ ", teachMode=" + teachMode
 				+ ", totalPrice=" + totalPrice + ", tradeType=" + tradeType
 				+ ", accountNumber=" + accountNumber + ", timeChange="
 				+ timeChange + ", teacherIncome=" + teacherIncome

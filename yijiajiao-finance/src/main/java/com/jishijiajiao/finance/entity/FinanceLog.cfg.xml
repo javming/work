@@ -17,8 +17,6 @@
         <result property="curriculumInfo" column="curriculum_info"/>
         <result property="curriculumType" column="curriculum_type"/>
         <result property="teachMode" column="teach_mode"/>
-        <result property="slaveId" column="slave_id"/>
-        <result property="slaveIds" column="slave_ids"/>
         <result property="totalPrice" column="total_price"/>
         <result property="tradeType" column="trade_type"/>
         <result property="accountNumber" column="account_number"/>
@@ -36,9 +34,9 @@
     
     <insert id="saveFinanceLog" parameterType="com.jishijiajiao.finance.entity.FinanceLog" useGeneratedKeys="true" keyProperty="id">
     	insert into finance_log(open_id,sell_openid,trade_time,order_number,commodity_id,commodity_type,curriculum_name,curriculum_info,curriculum_type,
-    	teach_mode,slave_id,slave_ids,total_price,trade_type,account_number,time_change,solution_id,teacher_income,system_income,variable_money_change,withdrawal_cash_change,
+    	teach_mode,total_price,trade_type,account_number,time_change,solution_id,teacher_income,system_income,variable_money_change,withdrawal_cash_change,
     	teacher_output,finance_logs_type,openid_isdel,sell_openid_isdel) values(#{openId},#{sellOpenId},#{tradeTime},#{orderNumber},#{commodityId},
-    	#{commodityType},#{curriculumName},#{curriculumInfo},#{curriculumType},#{teachMode},#{slaveId},#{slaveIds},#{totalPrice},#{tradeType},#{accountNumber},#{timeChange},
+    	#{commodityType},#{curriculumName},#{curriculumInfo},#{curriculumType},#{teachMode},#{totalPrice},#{tradeType},#{accountNumber},#{timeChange},
     	#{solutionId},#{teacherIncome},#{systemIncome},#{variableMoneyChange},#{withdrawalCashChange},#{teacherOutput},#{financeLogsType},#{openIdIsdel},#{sellOpenIdIsdel})
     </insert>
 
@@ -63,6 +61,9 @@
     	<if test="orderNumber != null">and order_number=#{orderNumber}</if><if test="commodityId != null">and commodity_id=#{orderNumber}</if>
     	<if test="financeLogsType != null">and finance_logs_type=#{financeLogsType}</if>
     	<if test="size >0"> limit #{begin},#{size}</if>
+    </select>
+    <select id="queryTeacherIncomeForLastMonth" parameterType="String" resultType="double">
+    	select sum(withdrawal_cash_change) from finance_log where  sell_openid=#{openId} and PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format(trade_time, '%Y%m' ) ) =2;
     </select>
     <cache eviction="FIFO" flushInterval="600000" size="1024" readOnly="true" />
 </mapper>

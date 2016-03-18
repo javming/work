@@ -10,6 +10,7 @@
         <result property="variableMoney" column="variable_money" />
         <result property="withdrawalCash" column="withdrawal_cash"/>
         <result property="totalMoney" column="total_money" />
+        <result property="totalSettleMoney" column="total_settle_money"/>
         <result property="updateTime" column="update_time" />
     </resultMap>
     
@@ -17,12 +18,12 @@
         select * from money_timer where open_id=#{openId};
     </select>
     <insert id="saveMoneyTimer" parameterType="com.jishijiajiao.finance.entity.MoneyTimer" useGeneratedKeys="true">
-    	insert into money_timer(open_id,variable_money,withdrawal_cash,total_money,update_time) values(#{openId},#{variableMoney},
-    	#{withdrawalCash},#{totalMoney},#{updateTime});
+    	insert into money_timer(open_id,variable_money,withdrawal_cash,total_money,total_settle_money,update_time) 
+    	values(#{openId},#{variableMoney},#{withdrawalCash},#{totalMoney},#{totalSettleMoney},#{updateTime});
     </insert>
     <update id="updateMoneyTimer" parameterType="com.jishijiajiao.finance.entity.MoneyTimer">
     	update money_timer set variable_money=#{variableMoney},withdrawal_cash=#{withdrawalCash},
-    	total_money=#{totalMoney},update_time=#{updateTime} where open_id=#{openId};
+    	total_money=#{totalMoney},total_settle_money=#{totalSettleMoney},update_time=#{updateTime} where open_id=#{openId};
     </update>
    
 </mapper>

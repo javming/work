@@ -35,5 +35,6 @@
         <mapper resource="com/jishijiajiao/finance/entity/DailySettleAccounts.cfg.xml"/>
         <mapper resource="com/jishijiajiao/finance/entity/BatchPayment.cfg.xml"/>
         <mapper resource="com/jishijiajiao/finance/entity/BatchPayDetail.cfg.xml"/>
+        <mapper resource="com/jishijiajiao/finance/entity/UserAlipay.cfg.xml"/>
     </mappers>
 </configuration> 

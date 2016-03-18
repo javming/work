@@ -19,7 +19,8 @@ public enum SystemStatus {
 	HAVE_NOT_ANSWERTIME(400007,"该用户无答疑时长，请购买时长包！"),
 	REMAINMONEY_NOT_ENOUGH(400008,"账户可提现金额不足！"),
 	VARIABLEMONEY_NOT_ENOUGH(400009,"账户可退款金额不足！"),
-	BATCH_NUM(400010,"每个批次最多转款1000笔");
+	BATCH_NUM(400010,"每个批次最多转款1000笔"),
+	BATCH_DETAIL_ERROR(400011,"批量付款详情数据异常！");
 	SystemStatus(int status, String str) {
 		setCode(status);
 		setStr(str);

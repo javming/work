@@ -8,21 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jishijiajiao.finance.bean.ResultMapper;
-import com.jishijiajiao.finance.dao.IDailySettleAccountsDAO;
+import com.jishijiajiao.finance.dao.ISettleAccountsDAO;
 import com.jishijiajiao.finance.dao.IMoneyTimerDAO;
 import com.jishijiajiao.finance.entity.DailySettleAccounts;
 import com.jishijiajiao.finance.entity.MoneyTimer;
 import com.jishijiajiao.finance.entity.SystemStatus;
-import com.jishijiajiao.finance.service.IDailySettleAccountsService;
+import com.jishijiajiao.finance.service.ISettleAccountsService;
 import com.jishijiajiao.finance.util.Config;
 @Service
-public class DailySettleAccountsServiceImpl implements
-		IDailySettleAccountsService {
+public class SettleAccountsServiceImpl implements
+		ISettleAccountsService {
 	protected static Logger log = Logger
-			.getLogger(DailySettleAccountsServiceImpl.class);
+			.getLogger(SettleAccountsServiceImpl.class);
 	private ResultMapper resultBean = new ResultMapper();
 	@Autowired
-	private IDailySettleAccountsDAO dailySettleAccountsDAO;
+	private ISettleAccountsDAO dailySettleAccountsDAO;
 	@Autowired
 	private IMoneyTimerDAO moneyTimerDAO;
 	@Override
@@ -40,14 +40,16 @@ public class DailySettleAccountsServiceImpl implements
 					continue;
 				}
 				double settleMoney = Config.getDouble("percentage")*dsa.getSettleMoney();
+				System.out.println("settleMoney=============="+settleMoney);
 				moneyTimer.setVariableMoney(moneyTimer.getVariableMoney()-settleMoney);
 				moneyTimer.setWithdrawalCash(moneyTimer.getWithdrawalCash()+settleMoney);
+				moneyTimer.setTotalSettleMoney(moneyTimer.getTotalSettleMoney()+settleMoney);
 				moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()+moneyTimer.getWithdrawalCash());
-				
+				dsa.setSettleMoney(settleMoney);
 				dailySettleAccountsDAO.insertDailySettleAccounts(dsa);
 				moneyTimerDAO.updateMoneyTimer(moneyTimer);
 			}
-			this.resultBean.setSucResult(null);
+			this.resultBean.setSucResult("保存成功！");
 			return this.resultBean;
 		}catch(Exception e){
 			e.printStackTrace();

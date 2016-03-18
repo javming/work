@@ -45,7 +45,7 @@ public interface IFinanceLogService {
 	 * @param financeLog
 	 * @return
 	 */
-	ResultMapper addWithdrawsCashLog(FinanceLog financeLog);
+	//ResultMapper addWithdrawsCashLog(FinanceLog financeLog);
 	
 	/**
 	 *@description 获取个人账单
@@ -53,5 +53,15 @@ public interface IFinanceLogService {
 	 *@return ResultMapper
 	 *@param openId,month,pageSize,pageNum 
 	 */
-	ResultMapper getPersonalBills(String openId, int month, int pageNum, int pageSize);
+	//ResultMapper getPersonalBills(String openId, int month, int pageNum, int pageSize);
+	/**
+	 *@description 添加教师提现记录（批量发工资）
+	 *@date 2016-3-16
+	 *@return ResultMapper
+	 *@param financeLog
+	 *@return
+	 */
+	ResultMapper addMonthSettleAccounts(List<FinanceLog> financeLogs);
+	
+	List<FinanceLog> queryTeacherIncomeLastMonth(List<String> openIds);
 }

@@ -6,7 +6,7 @@ import java.util.List;
 public class Page<E> implements Serializable{
 	public static int DEFAULT_PAGE_SIEZE=15;
 	private int pageNum=1;//当前页
-	private int pageSize=DEFAULT_PAGE_SIEZE;//没有多少条
+	private int pageSize=DEFAULT_PAGE_SIEZE;//每页有多少条
 	private int totalCount;//总条数
 	private int pageCount=-1;//总页数
 	private int previousPageIndex,nextPageIndex,lastPageIndex;

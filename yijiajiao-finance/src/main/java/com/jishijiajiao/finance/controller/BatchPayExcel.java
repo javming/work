@@ -45,6 +45,7 @@ public class BatchPayExcel extends HttpServlet{
 			throws ServletException, IOException {
 	    request.setCharacterEncoding("UTF-8");
 	    response.setContentType("text/html;charset=UTF-8");   
+	    PrintWriter out = response.getWriter();
 	    DiskFileItemFactory factory = new DiskFileItemFactory();
 	    ServletFileUpload upload = new ServletFileUpload(factory);
 	    File file = null;
@@ -103,7 +104,6 @@ public class BatchPayExcel extends HttpServlet{
 		    ClientResponse response2 = HttpClient.resource(url, params, "POST");
 		    String httpresp = response2.getEntity(String.class);
 		    System.out.println("httpRest=="+httpresp);
-		    PrintWriter out = response.getWriter();
 		    out.write("<html><body><h1>文件数据信息：</h1><table><tr><td>流水号</td><td>收款账号</td><td>收款账号名</td><td>收款金额</td><td>收款原因</td></tr>");
 		    for(BatchPayDetail bpd : payDetails){
 		    	System.out.println(bpd.getPayString());
@@ -117,6 +117,7 @@ public class BatchPayExcel extends HttpServlet{
 	    	e.printStackTrace();
 	    }catch (Exception e){
 	    	e.printStackTrace();
+	    	out.println(e.getLocalizedMessage());
 	    }
 	}
 	
@@ -126,58 +127,60 @@ public class BatchPayExcel extends HttpServlet{
 	 *@return List<BatchPayDetail>
 	 *@param file
 	 */
-	public List<BatchPayDetail> readExcel(String file){
+	public List<BatchPayDetail> readExcel(String file) throws Exception{
 		List<BatchPayDetail> payDetails = new ArrayList<BatchPayDetail>();
 	    jxl.Workbook readwb = null;
-	    try{
-			//构建workbook对象，只读workbook对象
-			//直接从本地文件创建workbook
-			InputStream instream = new FileInputStream(file);
-			readwb = Workbook.getWorkbook(instream);
-			
-			//sheet的下标是从0开始的
-			//获取第一张Sheet表
-			Sheet readsheet = readwb.getSheet(0);
-			//获取sheet表中所包含的总列数和总行数
-			int rsColums = readsheet.getColumns();
-			int rsRows = readsheet.getRows();
-			System.out.println("hang=="+rsRows+"--lie=="+rsColums);
-			//获取指定单元格的对象引用
-			for(int i =1;i<rsRows;i++){
-				BatchPayDetail payDetail = new BatchPayDetail();
-				for(int j=0;j<rsColums;j++){
-					Cell cell = readsheet.getCell(j,i);
-					String value = cell.getContents();
-					if(value==null || "".equals(value.trim())) continue;
-					System.out.print(j+"列"+value+"----");
-					switch (j) {
-					case 0:
-						payDetail.setRunning_no(value);
-						break;
-					case 1:
-						payDetail.setProceeds_account(value);
-						break;
-					case 2:
-						payDetail.setProceeds_name(value);
-						break;
-					case 3:
-						payDetail.setProceeds_fee(Double.parseDouble(value));
-						break;
-					case 4:
-						payDetail.setRemark(value);
-						break;
-					default:
-						break;
-					}
+		//构建workbook对象，只读workbook对象
+		//直接从本地文件创建workbook
+		InputStream instream = new FileInputStream(file);
+		readwb = Workbook.getWorkbook(instream);
+		
+		//sheet的下标是从0开始的
+		//获取第一张Sheet表
+		Sheet readsheet = readwb.getSheet(0);
+		//获取sheet表中所包含的总列数和总行数
+		int rsColums = readsheet.getColumns();
+		int rsRows = readsheet.getRows();
+		System.out.println("hang=="+rsRows+"--lie=="+rsColums);
+		//获取指定单元格的对象引用
+		for(int i =1;i<rsRows;i++){
+			BatchPayDetail payDetail = new BatchPayDetail();
+			for(int j=0;j<rsColums;j++){
+				Cell cell = readsheet.getCell(j,i);
+				String value = cell.getContents();
+				if(value==null || "".equals(value.trim())){
+					throw new RuntimeException("数据不完整：表中第"+(i+1)+"行第"+(j+1)+"列的值为空，请确认！");
 				}
-				payDetails.add(payDetail);
-				System.out.println();
+				System.out.print(j+"列"+value+"----");
+				switch (j) {
+				case 0:
+					payDetail.setRunning_no(value);
+					break;
+				case 1:
+					payDetail.setProceeds_account(value);
+					break;
+				case 2:
+					payDetail.setProceeds_name(value);
+					break;
+				case 3:
+					try {
+						payDetail.setProceeds_fee(Double.parseDouble(value));
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new RuntimeException("数据有误：表中第"+(i+1)+"行第"+(j+1)+"列的值应该为数字类型！");
+					}
+					break;
+				case 4:
+					payDetail.setRemark(value);
+					break;
+				default:
+					break;
+				}
 			}
-	    }catch(Exception e){
-	    	e.printStackTrace();
-	    }finally{
-	    	readwb.close();
-	    }
+			payDetails.add(payDetail);
+			System.out.println();
+		}
+	    readwb.close();
 	    return payDetails;
 		}
 	//去掉json串中的id和payString 

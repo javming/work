@@ -103,7 +103,7 @@ public class FinanceLogController {
 	 *@date 2016-1-11
 	 *@return ResultMapper
 	 *@param financeLog
-	 */
+	
 	@POST
 	@Path("/withdrawsCash")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -111,7 +111,7 @@ public class FinanceLogController {
 	public ResultMapper withdrawsCash(FinanceLog financeLog) {
 		return financeLogService.addWithdrawsCashLog(financeLog);
 	}
-
+ */
 	/**
 	 * @description 获取个人账户所剩答疑时长
 	 * @date 2015-12-28
@@ -142,6 +142,22 @@ public class FinanceLogController {
 		return moneyTimerService.getRemainMoney(openId);
 	}
 	
+	/**
+	 *@description 教师账户批量提现，用于每月15日发工资
+	 *@date 2016-3-17
+	 *@return ResultMapper
+	 *@param financeLogs
+	 *@return
+	 */
+	@POST
+	@Path("/monthSettleAccounts")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultMapper monthSettleAccounts(List<FinanceLog> financeLogs){
+		return financeLogService.addMonthSettleAccounts(financeLogs);
+	}
+	
+	/**
 	@GET
 	@Path("/personalBills")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -150,5 +166,21 @@ public class FinanceLogController {
 			@QueryParam("pageNum") int pageNum,@QueryParam("pageSize") int pageSize){
 		System.out.println("参数为 ：openId="+openId+",month="+month+"pageNum="+pageNum+"pageSize="+pageSize);
 		return financeLogService.getPersonalBills(openId,month,pageNum,pageSize);
+		
+	}*/
+	
+	@POST
+	@Path("/queryTeacherIncomeLastMonth")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultMapper queryTeacherIncomeLastMonth(List<String> openIds){
+		try {
+			List<FinanceLog> list = financeLogService.queryTeacherIncomeLastMonth(openIds);
+			this.resultBean.setSucResult(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
+		}
+		return this.resultBean;
 	}
 }

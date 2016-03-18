@@ -24,7 +24,9 @@
 		curriculum_info,save_time) values(#{openId},#{sellOpenId},#{orderNumber},#{commodityId},#{waresId},#{slaveId},#{settleMoney},
 		#{startTime},#{endTime},#{curriculumInfo},#{saveTime})
 	</insert>
-
+	<select id="queryTeacherIncomeForLastMonth" parameterType="String" resultType="double">
+		select sum(settle_money) from daily_settle_accounts where  sell_open_id=#{openId} and PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format(save_time, '%Y%m' ) ) =2;
+	</select>
 
 </mapper>
 

@@ -1,5 +1,6 @@
 package com.jishijiajiao.finance.service.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.jishijiajiao.finance.bean.ResultMapper;
 import com.jishijiajiao.finance.dao.IAnswerTimerDAO;
 import com.jishijiajiao.finance.dao.IFinanceLogDAO;
 import com.jishijiajiao.finance.dao.IMoneyTimerDAO;
+import com.jishijiajiao.finance.dao.ISettleAccountsDAO;
 import com.jishijiajiao.finance.dao.IWaresSlaveDAO;
 import com.jishijiajiao.finance.entity.AnswerTimer;
 import com.jishijiajiao.finance.entity.FinanceLog;
@@ -37,6 +39,8 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 	private IMoneyTimerDAO moneyTimerDAO;
 	@Autowired
 	private IWaresSlaveDAO waresSlaveDAO;
+	@Autowired
+	private ISettleAccountsDAO settleAccountsDAO;
 	private ResultMapper resultBean = new ResultMapper();
 
 	@Override
@@ -85,6 +89,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 							.getVariableMoneyChange());
 					moneyTimer.setWithdrawalCash(financeLog
 							.getWithdrawalCashChange());
+					moneyTimer.setTotalSettleMoney(financeLog.getWithdrawalCashChange());
 					moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()
 							+ moneyTimer.getWithdrawalCash());
 					moneyTimerDAO.saveMoneyTimer(moneyTimer);
@@ -97,6 +102,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 							+ financeLog.getWithdrawalCashChange());
 					moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()
 							+ moneyTimer.getWithdrawalCash());
+					moneyTimer.setTotalSettleMoney(moneyTimer.getTotalSettleMoney()+financeLog.getWithdrawalCashChange());
 					moneyTimerDAO.updateMoneyTimer(moneyTimer);
 					System.out.println("金额修改后：variableMoney="
 							+ moneyTimer.getVariableMoney()
@@ -205,6 +211,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			double totalPrice = financeLog.getTotalPrice();
 			financeLog.setVariableMoneyChange(0 - totalPrice
 					* Config.getDouble("percentage"));
+			financeLog.setTeacherIncome(financeLog.getVariableMoneyChange());
 			MoneyTimer moneyTimer = moneyTimerDAO
 					.queryMoneyTimerByOpenId(financeLog.getSellOpenId());
 			if (moneyTimer == null){
@@ -235,6 +242,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			financeLogDAO.saveFinanceLog(financeLog);
 			for (WaresSlave ws : financeLog.getWaresSlaves()) {
 				ws.setOrderNumber(financeLog.getOrderNumber());
+				ws.setCreateTime(DateUtil.getNowTime());
 				waresSlaveDAO.insertWaresSlave(ws);
 			}
 
@@ -279,7 +287,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 		}
 	}
 
-	@Override
+/*	@Override
 	@Transactional
 	public ResultMapper addWithdrawsCashLog(FinanceLog financeLog) {
 		try {
@@ -318,8 +326,8 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			return this.resultBean;
 		}
 	}
-
-	@Override
+*/
+/*	@Override
 	public ResultMapper getPersonalBills(String openId,int month,int pageNum, int pageSize) {
 		try{
 			if(month== 0) {//如果月份为空，则查询当月的数据
@@ -352,6 +360,60 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
 			return this.resultBean;
 		}
-	}
+	}*/
 
+	@Override
+	@Transactional
+	public ResultMapper addMonthSettleAccounts(List<FinanceLog> financeLogs) {
+		try {
+			for(FinanceLog flg:financeLogs){
+				flg.setTradeTime(DateUtil.getNowTime()); 
+				flg.setFinanceLogsType(4);
+				
+				financeLogDAO.saveFinanceLog(flg);
+				MoneyTimer moneyTimer = moneyTimerDAO.queryMoneyTimerByOpenId(flg.getSellOpenId());
+				double cash = moneyTimer.getWithdrawalCash();
+				if(cash<flg.getTeacherOutput()){
+					this.resultBean.setFailMsg(SystemStatus.REMAINMONEY_NOT_ENOUGH);
+					return this.resultBean;
+				}
+				moneyTimer.setWithdrawalCash(cash-flg.getTeacherOutput());
+				moneyTimer.setTotalSettleMoney(moneyTimer.getTotalSettleMoney()+flg.getTeacherOutput());
+				moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()+moneyTimer.getWithdrawalCash());
+				moneyTimerDAO.updateMoneyTimer(moneyTimer);
+			}
+			this.resultBean.setSucResult("保存成功！！");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
+		}
+		return this.resultBean;
+	}
+	
+	
+	public List<FinanceLog> queryTeacherIncomeLastMonth(List<String> openIds){
+		List<FinanceLog> financeLogs = new ArrayList<FinanceLog>();
+		for(String openId: openIds){
+			double income1;
+			double income2; 
+			try {
+				income1 = financeLogDAO.queryTeacherIncomeForLastMonth(openId);
+			} catch (Exception e) {
+				income1=0.0;
+			}
+			try {
+				income2= settleAccountsDAO.queryTeacherIncomeForLastMonth(openId);
+			} catch (Exception e) {
+				income2=0.0;
+			}
+			System.out.println("teacher_income========="+(income1+income2));
+			FinanceLog flg = new FinanceLog();
+			flg.setOpenId(openId);
+			flg.setTeacherIncome(income1+income2);
+			financeLogs.add(flg);
+		}
+		return financeLogs;
+		
+	}
 }
