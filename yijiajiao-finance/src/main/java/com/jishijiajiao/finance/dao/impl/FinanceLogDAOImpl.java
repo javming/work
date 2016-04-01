@@ -51,4 +51,19 @@ public class FinanceLogDAOImpl implements IFinanceLogDAO {
 		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IFinanceLogDAO.queryTeacherIncomeForLastMonth", openId);
 	}
 
+	@Override
+	public List<FinanceLog> queryTeacherTradeLogs(FinanceLogQuery flq) {
+		return sessionTemplate.selectList("com.jishijiajiao.finance.dao.IFinanceLogDAO.queryTeacherTradeLogs", flq);
+	}
+
+	@Override
+	public double queryTeacherIncomeForThisMonth(String openId) {
+		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IFinanceLogDAO.queryTeacherIncomeForThisMonth", openId);
+	}
+
+	@Override
+	public FinanceLog queryFinanceLogByOrderNum(String orderNumber) {
+		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IFinanceLogDAO.queryFinanceLogByOrderNum", orderNumber);
+	}
+
 }

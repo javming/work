@@ -18,6 +18,8 @@ public class DateUtil {
 	public final static String YYYY_MM_DD_HH_MM_SS_SS = "yyyy-MM-dd HH:mm:ss:SS";
 
 	public final static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+	
+	public final static String YYYY年MM月DD_HH_MM_SS="yyyy年MM月dd日 HH:mm:ss";
 
 	public final static String YYYY_MM_DD = "yyyy-MM-dd";
 
@@ -97,7 +99,20 @@ public class DateUtil {
 		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
 		return sdf.parse(date);
 	}
-
+	/**
+	 *@description  日期转字符串
+	 *@date 2016-3-31
+	 *@return String
+	 *@param date
+	 *@param pattern
+	 *@return
+	 */
+	public static final String dateToString(Date date ,String pattern){
+		if (date == null || pattern == null)
+			return null;
+		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		return sdf.format(date);
+	}
 	/**
 	 * 比较时间大小
 	 * 
@@ -138,6 +153,56 @@ public class DateUtil {
 		// return (temp/1000/60/60/24); //大于的时间/毫秒/秒/小时/天/
 		return (temp / 1000 / 60 / 60); // 大于的时间/毫秒/秒/小时/天/
 	}
+	/**
+	 *@description 比较两个字符串时间的大小(时间降序)
+	 *@date 2016-3-30
+	 *@return int
+	 *@param DATE1
+	 *@param DATE2
+	 *@return
+	 */
+    public static int compare_date0(String DATE1, String DATE2) {
+        DateFormat df = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        try {
+            Date dt1 = df.parse(DATE1);
+            Date dt2 = df.parse(DATE2);
+            if (dt1.getTime() > dt2.getTime()) {
+                return -1;
+            } else if (dt1.getTime() < dt2.getTime()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return 0;
+    }
+	/**
+	 *@description 比较两个字符串时间的大小(时间升序)
+	 *@date 2016-3-30
+	 *@return int
+	 *@param DATE1
+	 *@param DATE2
+	 *@return
+	 */
+    public static int compare_date1(String DATE1, String DATE2) {
+        DateFormat df = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        try {
+            Date dt1 = df.parse(DATE1);
+            Date dt2 = df.parse(DATE2);
+            if (dt1.getTime() > dt2.getTime()) {
+                return 1;
+            } else if (dt1.getTime() < dt2.getTime()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return 0;
+    }
 
 	/**
 	 * 将Date型转为String型
@@ -165,7 +230,7 @@ public class DateUtil {
 	 *            String 想要格式化成什么格式
 	 * @return String
 	 */
-	public final String StringPattern(String date, String oldPattern,
+	public static final String StringPattern(String date, String oldPattern,
 			String newPattern) {
 		if (date == null || oldPattern == null || newPattern == null)
 			return "";
@@ -246,7 +311,20 @@ public class DateUtil {
 				.get(Calendar.DATE));
 		return convDateToString(gc.getTime(), pattern);
 	}
-	
+	/**
+	 *@description	指定日期加几天
+	 *@date 2016-3-31
+	 *@return Date
+	 *@param date
+	 *@param days
+	 *@return
+	 */
+	public static Date addDays(Date date,int days){
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTime(date);
+	    calendar.add(Calendar.DATE,days); 
+	    return calendar.getTime();
+	}
 	/**
 	 * 
 	 * @param datetime

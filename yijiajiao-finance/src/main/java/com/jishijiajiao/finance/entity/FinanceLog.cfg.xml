@@ -9,8 +9,11 @@
         <id property="id" column="id" />
         <result property="openId" column="open_id" />
         <result property="sellOpenId" column="sell_openid" />
+        <result property="teacherPhoneNum" column="teacher_phonenum"/>
+        <result property="studentPhoneNum" column="student_phonenum"/>
         <result property="tradeTime" column="trade_time" />
         <result property="orderNumber" column="order_number"/>
+        <result property="trade_no" column="trade_no"/>
         <result property="commodityId" column="commodity_id"/>
         <result property="commodityType" column="commodity_type"/>
         <result property="curriculumName" column="curriculum_name"/>
@@ -33,9 +36,9 @@
     </resultMap>
     
     <insert id="saveFinanceLog" parameterType="com.jishijiajiao.finance.entity.FinanceLog" useGeneratedKeys="true" keyProperty="id">
-    	insert into finance_log(open_id,sell_openid,trade_time,order_number,commodity_id,commodity_type,curriculum_name,curriculum_info,curriculum_type,
+    	insert into finance_log(open_id,sell_openid,teacher_phonenum,student_phonenum,trade_time,order_number,trade_no,commodity_id,commodity_type,curriculum_name,curriculum_info,curriculum_type,
     	teach_mode,total_price,trade_type,account_number,time_change,solution_id,teacher_income,system_income,variable_money_change,withdrawal_cash_change,
-    	teacher_output,finance_logs_type,openid_isdel,sell_openid_isdel) values(#{openId},#{sellOpenId},#{tradeTime},#{orderNumber},#{commodityId},
+    	teacher_output,finance_logs_type,openid_isdel,sell_openid_isdel) values(#{openId},#{sellOpenId},#{teacherPhoneNum},#{studentPhoneNum},#{tradeTime},#{orderNumber},#{trade_no},#{commodityId},
     	#{commodityType},#{curriculumName},#{curriculumInfo},#{curriculumType},#{teachMode},#{totalPrice},#{tradeType},#{accountNumber},#{timeChange},
     	#{solutionId},#{teacherIncome},#{systemIncome},#{variableMoneyChange},#{withdrawalCashChange},#{teacherOutput},#{financeLogsType},#{openIdIsdel},#{sellOpenIdIsdel})
     </insert>
@@ -43,10 +46,13 @@
     <select id="queryFinanceLogsByOpenId" parameterType="String" resultMap="resultFinanceLog">
     	select * from finance_log  where open_id=#{openId};
     </select>
+    <select id="queryFinanceLogByOrderNum" parameterType="String" resultMap="resultFinanceLog">
+    	select * from finance_log where openid_isdel=0 and sell_openid_isdel=0 and finance_logs_type=1 and order_number=#{orderNumber};
+    </select>
     <select id="queryFinanceLogByConditions" parameterType="com.jishijiajiao.finance.entity.FinanceLog" resultMap="resultFinanceLog">
     	select * from finance_log where openid_isdel=0 and sell_openid_isdel=0 and finance_logs_type=#{financeLogsType}
     	<if test="openId != null"> and open_id=#{openId}</if><if test="sellOpenId != null"> and sell_openid=#{sellOpenId}</if>
-    	<if test="orderNumber != null">and order_number=#{orderNumber}</if><if test="commodityId != null">and commodity_id=#{orderNumber}</if>
+    	<if test="orderNumber != null">and order_number=#{orderNumber}</if><if test="commodityId != null">and commodity_id=#{commodityId}</if>
     </select>
     <select id="queryFinanceLogsByConditions" parameterType="com.jishijiajiao.finance.entity.query.FinanceLogQuery" resultMap="resultFinanceLog">
     	select * from finance_log where openid_isdel=0 and sell_openid_isdel=0 and month(trade_time)=#{month}
@@ -55,6 +61,12 @@
     	<if test="financeLogsType != null">and finance_logs_type=#{financeLogsType}</if>
     	<if test="size >0"> limit #{begin},#{size}</if>
     </select>
+    <select id="queryTeacherTradeLogs" parameterType="com.jishijiajiao.finance.entity.query.FinanceLogQuery" resultMap="resultFinanceLog">
+    	select * from finance_log where sell_openid_isdel=0 and sell_openid=#{sellOpenId} and finance_logs_type in (1,2) 
+    	<if test="startTime!=null">and   trade_time&gt;=#{startTime}</if><if test="endTime !=null">and trade_time&lt;=#{endTime}</if>
+    	order by trade_time desc;
+    </select>
+    
     <select id="queryCount" parameterType="com.jishijiajiao.finance.entity.query.FinanceLogQuery" resultMap="resultFinanceLog">
     	select count(*) from finance_log where openid_isdel=0 and sell_openid_isdel=0 and month(trade_time)=#{month}
     	<if test="openId != null"> and open_id=#{openId}</if><if test="sellOpenId != null"> and sell_openid=#{sellOpenId}</if>
@@ -62,8 +74,12 @@
     	<if test="financeLogsType != null">and finance_logs_type=#{financeLogsType}</if>
     	<if test="size >0"> limit #{begin},#{size}</if>
     </select>
+   <!--  查询上个月数据 -->
     <select id="queryTeacherIncomeForLastMonth" parameterType="String" resultType="double">
-    	select sum(withdrawal_cash_change) from finance_log where  sell_openid=#{openId} and PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format(trade_time, '%Y%m' ) ) =2;
+    	select sum(withdrawal_cash_change) from finance_log where  sell_openid=#{openId} and PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format(trade_time, '%Y%m' ) ) =1;
+    </select>
+    <select id="queryTeacherIncomeForThisMonth" parameterType="String" resultType="double">
+    	select sum(withdrawal_cash_change) from finance_log where  sell_openid=#{openId} and month(now())=month(trade_time);
     </select>
     <cache eviction="FIFO" flushInterval="600000" size="1024" readOnly="true" />
 </mapper>

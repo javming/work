@@ -2,6 +2,7 @@ package com.jishijiajiao.finance.test;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,22 +13,28 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 
+import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.jishijiajiao.finance.entity.BatchPayDetail;
 import com.jishijiajiao.finance.entity.FinanceLog;
 import com.jishijiajiao.finance.entity.WaresSlave;
+import com.jishijiajiao.finance.service.IBatchPayService;
+import com.jishijiajiao.finance.util.Config;
 import com.jishijiajiao.finance.util.DateUtil;
+import com.jishijiajiao.finance.util.HttpClient;
 import com.jishijiajiao.finance.util.JsonDateValueProcessor;
 import com.jishijiajiao.finance.util.RandomUtil;
 import com.jishijiajiao.finance.util.ReadExcelUtil;
 
 public class ITest {
 	@Test
-	public void testDate(){
-		Calendar cal = Calendar.getInstance();
+	public void testDate() throws ParseException{
+/*		Calendar cal = Calendar.getInstance();
 	    int day = cal.get(Calendar.DATE);
 	     int month = cal.get(Calendar.MONTH) + 1;
 	     int year = cal.get(Calendar.YEAR);
@@ -39,7 +46,22 @@ public class ITest {
 	     System.out.println("year=="+year);
 	     System.out.println("dow=="+dow);
 	     System.out.println("dom=="+dom);
-	     System.out.println("doy=="+doy);
+	     System.out.println("doy=="+doy);*/
+		DateUtil du = new DateUtil();
+		//获得本月第一天
+		Date beginMonth = du.calcBeginMonth(DateUtil.getNowTime());
+		Date endMonth = du.calcEndMonth(DateUtil.getNowTime());
+		Date addDays = DateUtil.addDays(beginMonth, 10);
+		System.out.println(DateUtil.dateToString(beginMonth, DateUtil.YYYY_MM_DD_HH_MM_SS));
+		System.out.println(DateUtil.dateToString(addDays, DateUtil.YYYY_MM_DD_HH_MM_SS));
+		System.out.println(DateUtil.dateToString(endMonth, DateUtil.YYYY_MM_DD_HH_MM_SS));
+		
+		//上个月第一天
+		String lasb = DateUtil.calcDate(beginMonth,DateUtil.YYYY_MM_DD, 2, -1);
+		//上个月最后天
+		String lase = DateUtil.calcDate(beginMonth, DateUtil.YYYY_MM_DD, 5, -1);
+		System.out.println(lasb);
+		System.out.println(lase);
 	}
 	@Test
 	public void testMath(){
@@ -57,22 +79,17 @@ public class ITest {
 		System.out.println(value);
 		
 	}
+	@Test
 	public void testHttpClient(){
-		FinanceLog financeLog = new FinanceLog();
-		financeLog.setOpenId("1f79efea-fcb2-4a55-8bc7-12b6055e49ed");
-		financeLog.setSellOpenId("6f79efea-fcb2-4a55-8bc7-12b6055e49ed");
-		financeLog.setOrderNumber("12121212131415926");
-		financeLog.setCommodityId("12121212131415926");
-		financeLog.setCurriculumName("初中历史");
-		financeLog.setCurriculumInfo("秦始皇统一六国");
-		financeLog.setTotalPrice(15.00);
-		financeLog.setAccountNumber("123@qq.com");
-		WaresSlave waSlave = new WaresSlave();
-		waSlave.setSlaveId(1);
-		waSlave.setStartTime("2016-01-27 08:00:00");
-		waSlave.setEndTime("2016-01-27 09:00:00");
-		financeLog.getWaresSlaves().add(waSlave);
 		
+		String httpRest = HttpClient.httpRest(Config.getString("user.server"),Config.getString("userinfo.url")+"0fe3858f-df02-402c-99ad-4ebc5a031e50", null, null, "GET");
+		System.out.println(httpRest);
+		JSONObject json = JSONObject.fromObject(httpRest);
+		JSONObject object = (JSONObject) json.get("result");
+		String name = object.getString("name");
+		String phone = object.getString("username");
+		System.out.println(name);
+		System.out.println(phone);
 	}
 	@Test
 	public void testStringBuilder(){
@@ -82,10 +99,8 @@ public class ITest {
 	}
 	@Test
 	public void getBatchno(){
-		String time = DateUtil.getNowTime("yyyyMMddhhmmss");
-		String random = RandomUtil.getRandomCharNum(6);
-		System.out.println(time);
-		System.out.println(random);
+		String batch_no = DateUtil.getNowTime("yyyyMMddhhmmss")+RandomUtil.getRandomCharNum(2);
+		System.out.println(batch_no);
 	}
 	
 	@Test
@@ -103,4 +118,12 @@ public class ITest {
 		sb.append(" 张三").append("                ").append("18");
 		System.out.println(sb.toString());
 	}
+	@Test
+	public void testmodBatchPayDetailAndMoneyTiemer(){
+		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+		IBatchPayService batchPayService=(IBatchPayService) context.getBean("batchPayService");
+		System.out.println("batchPayService============="+batchPayService);
+		batchPayService.modBatchPayDetailAndMoneyTiemer("20160321034826531855");
+	}
+
 }

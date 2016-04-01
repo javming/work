@@ -25,6 +25,9 @@
     	update money_timer set variable_money=#{variableMoney},withdrawal_cash=#{withdrawalCash},
     	total_money=#{totalMoney},total_settle_money=#{totalSettleMoney},update_time=#{updateTime} where open_id=#{openId};
     </update>
+    <select id="queryAllOpenIds" resultType="String">
+    	select open_id from money_timer;
+    </select>
    
 </mapper>
 

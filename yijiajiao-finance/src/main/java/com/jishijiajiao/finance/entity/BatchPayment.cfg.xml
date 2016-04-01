@@ -5,6 +5,7 @@
 <mapper namespace="com.jishijiajiao.finance.dao.IBatchPaymentDAO">
 	<resultMap type="com.jishijiajiao.finance.entity.BatchPayment" id="resultBatchPayment">
 		<id property="id" column="id"/>
+		<result property="email" column="email"/>
 		<result property="batch_no" column="batch_no"/>
 		<result property="batch_num" column="batch_num"/>
 		<result property="batch_fee" column="batch_fee"/>
@@ -21,15 +22,15 @@
 	</resultMap>
 	
 	<insert id="insertBatchPayment" parameterType="com.jishijiajiao.finance.entity.BatchPayment" useGeneratedKeys="true">
-		insert into batch_payment(batch_no,batch_num,batch_fee,pay_date,notify_time,notify_type,notify_id,pay_user_id,pay_user_name,
+		insert into batch_payment(batch_no,email,batch_num,batch_fee,pay_date,notify_time,notify_type,notify_id,pay_user_id,pay_user_name,
 		pay_account_no,is_dispose,success_details,fail_details) 
-		values(#{batch_no},#{batch_num},#{batch_fee},#{pay_date},#{notify_time},#{notify_type},#{notify_id},#{pay_user_id},#{pay_user_name},
+		values(#{batch_no},#{email},#{batch_num},#{batch_fee},#{pay_date},#{notify_time},#{notify_type},#{notify_id},#{pay_user_id},#{pay_user_name},
 		#{pay_account_no},#{is_dispose},#{success_details},#{fail_details});
 	</insert>
 	<update id="updateBatchPayment" parameterType="com.jishijiajiao.finance.entity.BatchPayment" >
-		update batch_payment set batch_no=#{batch_no},batch_num=#{batch_num},batch_fee=#{batch_fee},pay_date=#{pay_date},notify_time=#{notify_time},
+		update batch_payment set batch_no=#{batch_no},email=#{email},batch_num=#{batch_num},batch_fee=#{batch_fee},pay_date=#{pay_date},notify_time=#{notify_time},
 		notify_type=#{notify_type},notify_id=#{notify_id},pay_user_id=#{pay_user_id},pay_user_name=#{pay_user_name},pay_account_no=#{pay_account_no},
-		is_dispose=#{is_dispose},success_details=#{success_details},fail_details=#{fail_details};
+		is_dispose=#{is_dispose},success_details=#{success_details},fail_details=#{fail_details} where id=#{id};
 	</update>
 	<select id="selectBatchPaymentByBatch_no" parameterType="String" resultMap="resultBatchPayment">
 		select * from batch_payment where batch_no=#{batch_no};

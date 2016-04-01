@@ -19,5 +19,10 @@ public class SettleAccountsDAOImpl implements ISettleAccountsDAO {
 	public double queryTeacherIncomeForLastMonth(String openId) {
 		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IDailySettleAccountsDAO.queryTeacherIncomeForLastMonth", openId);
 	}
-
+	@Override
+	public double queryTeacherIncomeForThisMonth(String openId) {
+		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IDailySettleAccountsDAO.queryTeacherIncomeForThisMonth", openId);
+	}
+	
+	
 }

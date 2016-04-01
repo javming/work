@@ -20,7 +20,10 @@ public enum SystemStatus {
 	REMAINMONEY_NOT_ENOUGH(400008,"账户可提现金额不足！"),
 	VARIABLEMONEY_NOT_ENOUGH(400009,"账户可退款金额不足！"),
 	BATCH_NUM(400010,"每个批次最多转款1000笔"),
-	BATCH_DETAIL_ERROR(400011,"批量付款详情数据异常！");
+	BATCH_DETAIL_ERROR(400011,"批量付款详情数据异常！"),
+	USER_ALIPAY_HAS(400012,"该账户已绑定支付宝账号"),
+	PARAM_NULL(400013,"有数据为空，请验证！"),
+	PHONE_NOT_HAS(400014,"手机号码有误或不存在");
 	SystemStatus(int status, String str) {
 		setCode(status);
 		setStr(str);

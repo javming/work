@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.jishijiajiao.finance.bean.ResultMapper;
 import com.jishijiajiao.finance.entity.FinanceLog;
+import com.jishijiajiao.finance.entity.query.FinanceLogQuery;
 
 public interface IFinanceLogService {
 	/**
@@ -64,4 +65,12 @@ public interface IFinanceLogService {
 	ResultMapper addMonthSettleAccounts(List<FinanceLog> financeLogs);
 	
 	List<FinanceLog> queryTeacherIncomeLastMonth(List<String> openIds);
+	/**
+	 *@description	通过条件查询教师本月的交易记录
+	 *@date 2016-3-30
+	 *@return FinanceLog
+	 *@param flq
+	 *@return
+	 */
+	ResultMapper queryTeacherTradeLogs(FinanceLogQuery flq);
 }

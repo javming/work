@@ -59,5 +59,23 @@ public interface IFinanceLogDAO {
 	 *@return
 	 */
 	double queryTeacherIncomeForLastMonth(String openId);
+	/**
+	 *@description 获取本月教师收入总和，主要是计算finance_log表中withdrawal_cash_change字段的总和
+	 *								作为收入总和的一部分，配合daily_settle_accounts表计算总共收入总和
+	 *@date 2016-3-31
+	 *@return double
+	 *@param openId
+	 *@return
+	 */
+	double queryTeacherIncomeForThisMonth(String openId);
 
+	List<FinanceLog> queryTeacherTradeLogs(FinanceLogQuery flq);
+	/**
+	 *@description	通过订单号查询订单详情
+	 *@date 2016-4-1
+	 *@return FinanceLog
+	 *@param orderNumber
+	 *@return
+	 */
+	FinanceLog queryFinanceLogByOrderNum(String orderNumber);
 }

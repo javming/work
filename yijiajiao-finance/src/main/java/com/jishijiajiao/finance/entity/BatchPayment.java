@@ -6,6 +6,7 @@ import java.util.List;
 
 public class BatchPayment implements Serializable {
 	private int id;
+	private String email;//付款账号
 	private String  batch_no;//批量转款的批次号
 	private int batch_num;//付款总笔数
 	private double batch_fee;//付款总金额
@@ -15,7 +16,7 @@ public class BatchPayment implements Serializable {
 	private String notify_id;//通知校验ID
 	private String pay_user_id;//付款账号ID
 	private String pay_user_name;//付款账号姓名
-	private String pay_account_no;//付款账号
+	private String pay_account_no;//付款账号(付款成功后支付宝返回的付款账号)
 	private String sign;//签名
 	private String sign_type;//签名方式
 	private int is_dispose;//是否处理 0未处理 1已处理
@@ -27,6 +28,13 @@ public class BatchPayment implements Serializable {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	public String getBatch_no() {
 		return batch_no;

@@ -38,6 +38,8 @@ public class IAnswerTimerServiceImpl implements IAnswerTimerService {
 				answerTimer.setRemainTime(0);
 				answerTimer.setOpenId(openId);
 				answerTimer.setUpdateTime(DateUtil.getNowTime());
+			}else{
+				answerTimer.setUpdateTime(DateUtil.StringPattern(answerTimer.getUpdateTime(), DateUtil.YYYY_MM_DD_HH_MM_SS_MS, DateUtil.YYYY_MM_DD_HH_MM_SS));
 			}
 			this.resultMap.setSucResult(answerTimer);
 			log.info("resultMap==" + this.resultMap);

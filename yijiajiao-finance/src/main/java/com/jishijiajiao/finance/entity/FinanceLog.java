@@ -9,8 +9,11 @@ public class FinanceLog implements Serializable {
 	private Integer id;
 	private String openId;
 	private String sellOpenId;// 被购买的用户主键(教师提现时的openId也存于此字段)
+	private String teacherPhoneNum;//教师手机号
+	private String studentPhoneNum;//学生手机号
 	private String tradeTime;// 交易时间（包括购买时间，学生答疑消费时间，教师转出金额时间）
 	private String orderNumber;// 订单号
+	private String trade_no;//支付宝交易号
 	private String commodityId;// 商品号
 	private Integer commodityType;// 商品类型(1课程 2答疑 3密卷 4诊断)
 	private String curriculumName;// 商品名称
@@ -31,6 +34,30 @@ public class FinanceLog implements Serializable {
 	private Integer openIdIsdel = 0;// 消费者（主要学生）删除 1表示删除 0表示显示
 	private Integer sellOpenIdIsdel = 0;// 销售者（主要是教师）是否删除 0否 1删除
 	private List<WaresSlave> waresSlaves = new ArrayList<WaresSlave>();//主要用于接收退款时每小节课的信息
+	
+	public String getTeacherPhoneNum() {
+		return teacherPhoneNum;
+	}
+
+	public void setTeacherPhoneNum(String teacherPhoneNum) {
+		this.teacherPhoneNum = teacherPhoneNum;
+	}
+
+	public String getStudentPhoneNum() {
+		return studentPhoneNum;
+	}
+
+	public void setStudentPhoneNum(String studentPhoneNum) {
+		this.studentPhoneNum = studentPhoneNum;
+	}
+
+	public String getTrade_no() {
+		return trade_no;
+	}
+
+	public void setTrade_no(String trade_no) {
+		this.trade_no = trade_no;
+	}
 
 	public Integer getId() {
 		return id;

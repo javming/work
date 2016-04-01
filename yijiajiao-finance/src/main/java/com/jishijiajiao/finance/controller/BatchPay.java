@@ -102,9 +102,10 @@ public class BatchPay extends HttpServlet {
 			BatchPayment batchPayment = batchPayService.getBatchPaymentByBatch_no(bap.getBatch_no());
 			if(batchPayment != null && batchPayment.getIs_dispose()==1){
 				log.info("该批次转账已处理!!!! batch_no="+bap.getBatch_no());
-			}else{
+			}else if(bap.getFail_details() == null &&  "".equals(bap.getFail_details())){
 				bap.setIs_dispose(1);
 				batchPayService.modBatchPayment(bap);
+				batchPayService.modBatchPayDetailAndMoneyTiemer(bap.getBatch_no());
 				System.out.println("batchPayment保存成功!");
 			}
 			 out.println("success"); // 请不要修改或删除

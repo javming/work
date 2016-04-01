@@ -24,6 +24,7 @@ import com.jishijiajiao.finance.entity.FinanceLog;
 import com.jishijiajiao.finance.entity.MoneyTimer;
 import com.jishijiajiao.finance.entity.SystemStatus;
 import com.jishijiajiao.finance.entity.WaresSlave;
+import com.jishijiajiao.finance.entity.query.FinanceLogQuery;
 import com.jishijiajiao.finance.service.IAnswerTimerService;
 import com.jishijiajiao.finance.service.IFinanceLogService;
 import com.jishijiajiao.finance.service.IMoneyTimerService;
@@ -124,6 +125,10 @@ public class FinanceLogController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResultMapper getRemainAnswerTime(@QueryParam("openId") String openId) {
 		log.info("参数 ：openid=" + openId);
+		if(openId==null || "".equals(openId)){
+			this.resultBean.setFailMsg(SystemStatus.PARAM_NOT_NULL);
+			return this.resultBean;
+		}
 		return answerTimerService.getRemainAnswerTime(openId);
 	}
 
@@ -139,6 +144,10 @@ public class FinanceLogController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResultMapper getRemainMoney(@QueryParam("openId") String openId) {
 		log.info("参数：openId==" + openId);
+		if(openId==null || "".equals(openId)){
+			this.resultBean.setFailMsg(SystemStatus.PARAM_NOT_NULL);
+			return this.resultBean;
+		}
 		return moneyTimerService.getRemainMoney(openId);
 	}
 	
@@ -182,5 +191,20 @@ public class FinanceLogController {
 			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
 		}
 		return this.resultBean;
+	}
+	
+	/**
+	 *@description		通过手机号和时间获取教师交易详情列表
+	 *@date 2016-4-1
+	 *@return ResultMapper
+	 *@param flq
+	 *@return
+	 */
+	@POST
+	@Path("/personalFinance")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultMapper personalFinanceLogs(FinanceLogQuery flq){
+		return financeLogService.queryTeacherTradeLogs(flq);
 	}
 }

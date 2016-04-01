@@ -9,6 +9,46 @@ public class FinanceLogQuery extends FinanceLog{
 	private int month;//标识要查询几月份的数据
 	private int begin;
 	private int size;
+	private String startTime;//查询的开始时间
+	private String endTime;//查询的截止时间
+	private String phoneNum;//手机号
+	
+	private int ray=0;//0表示时间降序，1表示时间升序
+	
+	
+	
+	public int getRay() {
+		return ray;
+	}
+
+	public void setRay(int ray) {
+		this.ray = ray;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getPhoneNum() {
+		return phoneNum;
+	}
+
+	public void setPhoneNum(String phoneNum) {
+		this.phoneNum = phoneNum;
+	}
+
 	public int getMonth() {
 		return month;
 	}

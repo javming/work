@@ -2,14 +2,19 @@ package com.jishijiajiao.finance.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jishijiajiao.finance.bean.FinanceBean;
 import com.jishijiajiao.finance.bean.Page;
 import com.jishijiajiao.finance.bean.ResultMapper;
 import com.jishijiajiao.finance.dao.IAnswerTimerDAO;
@@ -26,6 +31,7 @@ import com.jishijiajiao.finance.entity.query.FinanceLogQuery;
 import com.jishijiajiao.finance.service.IFinanceLogService;
 import com.jishijiajiao.finance.util.Config;
 import com.jishijiajiao.finance.util.DateUtil;
+import com.jishijiajiao.finance.util.HttpClient;
 
 @Service("financeLogService")
 public class IFinanceLogServiceImpl implements IFinanceLogService {
@@ -202,16 +208,22 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 	public ResultMapper addRefundMoneyLog(FinanceLog financeLog) {
 		try {
 			financeLog.setFinanceLogsType(2);// 表示退款记录
+			financeLog.setTradeType(1);//退款方式 支付宝
 			if(financeLog.getTradeTime() == null)financeLog.setTradeTime(DateUtil.getNowTime());
 			FinanceLog financeLog2 = financeLogDAO.queryFinanceLogByConditions(financeLog);
 			if(financeLog2 != null){
 				this.resultBean.setFailMsg(SystemStatus.LOG_AREADY_BEEN);
 				return this.resultBean;
 			}
+			FinanceLog financeLog3 = financeLogDAO.queryFinanceLogByOrderNum(financeLog.getOrderNumber());
+			System.out.println("financeLog3=="+financeLog3);
+			financeLog.setCurriculumType(financeLog3.getCurriculumType());
+			System.out.println("currculumType=="+financeLog.getCurriculumType());
 			double totalPrice = financeLog.getTotalPrice();
 			financeLog.setVariableMoneyChange(0 - totalPrice
 					* Config.getDouble("percentage"));
 			financeLog.setTeacherIncome(financeLog.getVariableMoneyChange());
+			financeLog.setSystemIncome(0-(totalPrice*(1-Config.getDouble("percentage"))));
 			MoneyTimer moneyTimer = moneyTimerDAO
 					.queryMoneyTimerByOpenId(financeLog.getSellOpenId());
 			if (moneyTimer == null){
@@ -235,7 +247,6 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			}
 
 
-			// 占位行 ：调用支付宝接口进行转账若成功 则进行记录保存
 			log.info("保存数据：moneyTimer===="+moneyTimer);
 			log.info("保存数据：financeLog===="+financeLog);
 
@@ -415,5 +426,119 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 		}
 		return financeLogs;
 		
+	}
+
+	@Override
+	public ResultMapper queryTeacherTradeLogs(FinanceLogQuery flq) {
+		try {
+			//通过手机号查询openId
+			System.out.println("通过手机号查询openId-->"+Config.getString("user.server")+Config.getString("open_id.url")+flq.getPhoneNum());
+			String httpRest = HttpClient.httpRest(Config.getString("user.server"), Config.getString("open_id.url")+flq.getPhoneNum(), null, null, "GET");
+			System.out.println("httpRest=="+httpRest);
+			JSONObject json = JSONObject.fromObject(httpRest);
+			Object result = json.get("result");
+			System.out.println("result============"+result);
+			if(result.equals(null)){
+				this.resultBean.setFailMsg(SystemStatus.PHONE_NOT_HAS);
+				return this.resultBean;
+			}
+			JSONObject obj = (JSONObject) json.get("result");
+			String openId = obj.getString("userOpenId");
+			System.out.println("查询结果  openId=="+openId);
+			flq.setSellOpenId(openId);
+			if(flq.getEndTime() != null){
+				Date endTime = DateUtil.stringTodate(flq.getEndTime(), "yyyy-MM-dd");
+				flq.setEndTime(DateUtil.dateToString(DateUtil.addDays(endTime, 1), "yyyy-MM-dd"));
+			}
+			System.out.println("参数==》sellOpenId="+flq.getSellOpenId()+",startTime="+flq.getStartTime()+",endTime="+flq.getEndTime());
+			
+			List<FinanceLog> conditions = financeLogDAO.queryTeacherTradeLogs(flq);
+			List<FinanceBean> financeBeans = new ArrayList<FinanceBean>();
+			Double totalTeacherIncome=0.0; //教师收入总和
+			Double totalSytemIncome=0.0;//平台收入总和
+			Double totalTeacherRefund=0.0;//教师退款总和
+			Double totalSytemRefund=0.0;//平台退款总和
+			for(FinanceLog fl : conditions){
+				FinanceBean financeBean = new FinanceBean();
+				financeBean.setOpenId(fl.getSellOpenId());
+				financeBean.setTeacherPhoneNum(fl.getTeacherPhoneNum());
+				financeBean.setStudentPhoneNum(fl.getStudentPhoneNum());
+				financeBean.setTradeTime(DateUtil.StringPattern(fl.getTradeTime(), DateUtil.YYYY_MM_DD_HH_MM_SS_MS, DateUtil.YYYY年MM月DD_HH_MM_SS));
+				financeBean.setOrderNumber(fl.getOrderNumber());
+				financeBean.setTrade_no(fl.getTrade_no());
+				financeBean.setCurriculumName(fl.getCurriculumName());
+				financeBean.setTotalPrice(fl.getTotalPrice());
+				if(fl.getTradeType() != null){
+					switch (fl.getTradeType()) {
+					case 1:financeBean.setTradeType("支付宝");
+						break;
+					case 2:financeBean.setTradeType("微信");
+						break;
+					case 3:financeBean.setTradeType("银行卡");
+						break;
+					default:
+						break;
+					}
+				}
+				if(fl.getCurriculumType() != null){
+					switch (fl.getCurriculumType()) {
+					case 0:financeBean.setCurriculumType("直播课");
+						break;
+					case 1:financeBean.setCurriculumType("一对一");
+						break;
+					case 2:financeBean.setCurriculumType("视频课");
+					default:
+						break;
+					}
+				}
+				financeBean.setTeacherIncome(fl.getTeacherIncome());
+				financeBean.setSystemIncome(fl.getSystemIncome());
+				financeBean.setFinanceLogsType(fl.getFinanceLogsType());
+				if(fl.getFinanceLogsType()==1){
+					totalTeacherIncome+=fl.getTeacherIncome();
+					totalSytemIncome+=fl.getSystemIncome();
+				}else if(fl.getFinanceLogsType()==2){
+					totalTeacherRefund+=fl.getTeacherIncome();
+					totalSytemRefund+=fl.getSystemIncome();
+				}
+				financeBeans.add(financeBean);
+			}
+			if(flq.getRay()==0){
+				Collections.sort(financeBeans, new sortByDateDesc0());
+			}else{
+				Collections.sort(financeBeans, new sortByDateDesc1());
+			}
+			FinanceBean financeBean = new FinanceBean();
+			financeBean.setTotalTeacherIncome(totalTeacherIncome);
+			financeBean.setTotalSytemIncome(totalSytemIncome);
+			financeBean.setTotalTeacherRefund(totalTeacherRefund);
+			financeBean.setTotalSytemRefund(totalSytemRefund);
+			financeBeans.add(financeBean);
+			this.resultBean.setSucResult(financeBeans);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
+		}
+		return this.resultBean;
+
+	}
+}
+//时间降序
+class sortByDateDesc0 implements Comparator{
+	@Override
+	public int compare(Object o1, Object o2) {
+		FinanceBean fb1 = (FinanceBean) o1;
+		FinanceBean fb2 = (FinanceBean) o2;
+		return DateUtil.compare_date0(fb1.getTradeTime(), fb2.getTradeTime());
+	}
+}
+//时间升序
+class sortByDateDesc1 implements Comparator{
+	@Override
+	public int compare(Object o1, Object o2) {
+		FinanceBean fb1 = (FinanceBean) o1;
+		FinanceBean fb2 = (FinanceBean) o2;
+		return DateUtil.compare_date1(fb1.getTradeTime(), fb2.getTradeTime());
 	}
 }
