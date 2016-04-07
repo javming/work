@@ -431,6 +431,13 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 	@Override
 	public ResultMapper queryTeacherTradeLogs(FinanceLogQuery flq) {
 		try {
+			if(flq.getPhoneNum()==null){
+				this.resultBean.setFailMsg(SystemStatus.PHONE_NOT_NULL);
+				return this.resultBean;
+			}else if(flq.getStartTime()==null || flq.getEndTime()==null){
+				this.resultBean.setFailMsg(SystemStatus.DATE_NOT_NULL);
+				return this.resultBean;
+			}
 			//通过手机号查询openId
 			System.out.println("通过手机号查询openId-->"+Config.getString("user.server")+Config.getString("open_id.url")+flq.getPhoneNum());
 			String httpRest = HttpClient.httpRest(Config.getString("user.server"), Config.getString("open_id.url")+flq.getPhoneNum(), null, null, "GET");
@@ -446,18 +453,16 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			String openId = obj.getString("userOpenId");
 			System.out.println("查询结果  openId=="+openId);
 			flq.setSellOpenId(openId);
-			if(flq.getEndTime() != null){
-				Date endTime = DateUtil.stringTodate(flq.getEndTime(), "yyyy-MM-dd");
-				flq.setEndTime(DateUtil.dateToString(DateUtil.addDays(endTime, 1), "yyyy-MM-dd"));
-			}
+			Date endTime = DateUtil.stringTodate(flq.getEndTime(), "yyyy-MM-dd");
+			flq.setEndTime(DateUtil.dateToString(DateUtil.addDays(endTime, 1), "yyyy-MM-dd"));
 			System.out.println("参数==》sellOpenId="+flq.getSellOpenId()+",startTime="+flq.getStartTime()+",endTime="+flq.getEndTime());
 			
 			List<FinanceLog> conditions = financeLogDAO.queryTeacherTradeLogs(flq);
 			List<FinanceBean> financeBeans = new ArrayList<FinanceBean>();
-			Double totalTeacherIncome=0.0; //教师收入总和
-			Double totalSytemIncome=0.0;//平台收入总和
-			Double totalTeacherRefund=0.0;//教师退款总和
-			Double totalSytemRefund=0.0;//平台退款总和
+			Double totalIncome=0.0;//收入总和
+			Double totalRefund=0.0;//退款总和
+			Double totalTeacherIncome=0.0; //教师部分总和
+			Double totalSytemIncome=0.0;//平台总和
 			for(FinanceLog fl : conditions){
 				FinanceBean financeBean = new FinanceBean();
 				financeBean.setOpenId(fl.getSellOpenId());
@@ -493,14 +498,14 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 				}
 				financeBean.setTeacherIncome(fl.getTeacherIncome());
 				financeBean.setSystemIncome(fl.getSystemIncome());
-				financeBean.setFinanceLogsType(fl.getFinanceLogsType());
 				if(fl.getFinanceLogsType()==1){
-					totalTeacherIncome+=fl.getTeacherIncome();
-					totalSytemIncome+=fl.getSystemIncome();
+					totalIncome+=fl.getTotalPrice();
 				}else if(fl.getFinanceLogsType()==2){
-					totalTeacherRefund+=fl.getTeacherIncome();
-					totalSytemRefund+=fl.getSystemIncome();
+					totalRefund-=fl.getTotalPrice();
 				}
+				financeBean.setFinanceLogsType(fl.getFinanceLogsType());
+				totalTeacherIncome+=fl.getTeacherIncome();
+				totalSytemIncome+=fl.getSystemIncome();
 				financeBeans.add(financeBean);
 			}
 			if(flq.getRay()==0){
@@ -509,10 +514,10 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 				Collections.sort(financeBeans, new sortByDateDesc1());
 			}
 			FinanceBean financeBean = new FinanceBean();
+			financeBean.setTotalIncome(totalIncome);
+			financeBean.setTotalRefund(totalRefund);
 			financeBean.setTotalTeacherIncome(totalTeacherIncome);
 			financeBean.setTotalSytemIncome(totalSytemIncome);
-			financeBean.setTotalTeacherRefund(totalTeacherRefund);
-			financeBean.setTotalSytemRefund(totalSytemRefund);
 			financeBeans.add(financeBean);
 			this.resultBean.setSucResult(financeBeans);
 		} catch (Exception e) {

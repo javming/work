@@ -119,4 +119,18 @@ public class BatchPayController {
 		}
 		return this.resultBean;
 	}
+	/**
+	 *@description  获得根据条件获得教师工资对账单
+	 *@date 2016-4-6
+	 *@return ResultMapper
+	 *@param batchPayDetailQuery
+	 *@return
+	 */
+	@POST
+	@Path("/salaryStatement")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultMapper getSalaryStatement(BatchPayDetailQuery batchPayDetailQuery){
+		return batchPayService.querySettleInfoByDate(batchPayDetailQuery);
+	}
 }

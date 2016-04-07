@@ -6,6 +6,15 @@ public class BatchPayDetailQuery extends BatchPayDetail{
 	private int pageNum;
 	private int pageSize;
 	private int startRow;
+	private String queryDate;
+	
+	
+	public String getQueryDate() {
+		return queryDate;
+	}
+	public void setQueryDate(String queryDate) {
+		this.queryDate = queryDate;
+	}
 	public int getPageNum() {
 		return pageNum;
 	}

@@ -9,10 +9,10 @@ import java.util.Date;
 public class MoneyTimer implements Serializable {
 	private int id;
 	private String openId;
-	private double variableMoney = 0.0;//浮动金额，可能退款
-	private double withdrawalCash = 0.0;//本期可提现金额
-	private double totalMoney = 0.0;//总金额
-	private double totalSettleMoney=0.0;//收入总金额(包括已提现的和本期可提现的金额)
+	private double variableMoney;//浮动金额，可能退款
+	private double withdrawalCash;//本期可提现金额
+	private double totalMoney;//总金额
+	private double totalSettleMoney;//收入总金额(包括已提现的和本期可提现的金额)
 	private String updateTime;
 	public int getId() {
 		return id;

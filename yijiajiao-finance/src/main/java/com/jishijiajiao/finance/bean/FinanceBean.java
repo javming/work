@@ -17,11 +17,10 @@ public class FinanceBean implements Serializable {
 	private Double systemIncome = 0.0;// 平台收入（或者退款）
 	private int financeLogsType;// 财务记录类型(1订单 2退款  3消费答疑)
 	
+	private Double totalIncome;//收入总和
+	private Double totalRefund;//退款总和
 	private Double totalTeacherIncome; //教师收入总和
 	private Double totalSytemIncome;//平台收入总和
-	private Double totalTeacherRefund;//教师退款总和
-	private Double totalSytemRefund;//平台退款总和
-	
 	
 	public String getCurriculumType() {
 		return curriculumType;
@@ -40,18 +39,6 @@ public class FinanceBean implements Serializable {
 	}
 	public void setTotalSytemIncome(Double totalSytemIncome) {
 		this.totalSytemIncome = totalSytemIncome;
-	}
-	public Double getTotalTeacherRefund() {
-		return totalTeacherRefund;
-	}
-	public void setTotalTeacherRefund(Double totalTeacherRefund) {
-		this.totalTeacherRefund = totalTeacherRefund;
-	}
-	public Double getTotalSytemRefund() {
-		return totalSytemRefund;
-	}
-	public void setTotalSytemRefund(Double totalSytemRefund) {
-		this.totalSytemRefund = totalSytemRefund;
 	}
 	public String getTrade_no() {
 		return trade_no;
@@ -126,6 +113,19 @@ public class FinanceBean implements Serializable {
 	public void setFinanceLogsType(int financeLogsType) {
 		this.financeLogsType = financeLogsType;
 	}
+	
+	public Double getTotalIncome() {
+		return totalIncome;
+	}
+	public void setTotalIncome(Double totalIncome) {
+		this.totalIncome = totalIncome;
+	}
+	public Double getTotalRefund() {
+		return totalRefund;
+	}
+	public void setTotalRefund(Double totalRefund) {
+		this.totalRefund = totalRefund;
+	}
 	@Override
 	public String toString() {
 		return "FinanceBean [openId=" + openId + ", teacherPhoneNum="
@@ -136,11 +136,11 @@ public class FinanceBean implements Serializable {
 				+ ", totalPrice=" + totalPrice + ", tradeType=" + tradeType
 				+ ", teacherIncome=" + teacherIncome + ", systemIncome="
 				+ systemIncome + ", financeLogsType=" + financeLogsType
-				+ ", totalTeacherIncome=" + totalTeacherIncome
-				+ ", totalSytemIncome=" + totalSytemIncome
-				+ ", totalTeacherRefund=" + totalTeacherRefund
-				+ ", totalSytemRefund=" + totalSytemRefund + "]";
+				+ ", totalIncome=" + totalIncome + ", totalRefund="
+				+ totalRefund + ", totalTeacherIncome=" + totalTeacherIncome
+				+ ", totalSytemIncome=" + totalSytemIncome + "]";
 	}
+	
 
 	
 }

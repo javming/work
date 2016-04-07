@@ -6,6 +6,15 @@ import java.util.List;
  * 列表分页。包含list属性。
  */
 public class Pagination extends SimplePage {
+	private double totalFee;
+	
+	public double getTotalFee() {
+		return totalFee;
+	}
+
+	public void setTotalFee(double totalFee) {
+		this.totalFee = totalFee;
+	}
 
 	public Pagination() {
 	}

@@ -38,5 +38,15 @@ public class IBatchPayDetailDAOImpl implements IBatchPayDetailDAO {
 	public void updateNumber(BatchPayDetail bpd) {
 		sessionTemplate.update("com.jishijiajiao.finance.dao.IBatchPayDetailDAO.updateNumber", bpd);
 	}
+	@Override
+	public int getCountByDateAndPhone(BatchPayDetailQuery batchPayDetailQuery) {
+		// TODO Auto-generated method stub
+		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IBatchPayDetailDAO.getCountByDateAndPhone", batchPayDetailQuery);
+	}
+	@Override
+	public double getSumIncome(BatchPayDetailQuery batchPayDetailQuery) {
+		// TODO Auto-generated method stub
+		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IBatchPayDetailDAO.getSumIncome", batchPayDetailQuery);
+	}
 
 }

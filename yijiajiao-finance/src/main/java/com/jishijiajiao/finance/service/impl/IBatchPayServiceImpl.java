@@ -153,7 +153,6 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 		}
 	}
 	@Override
-	@Transactional
 	public Pagination querySettleInfo(BatchPayDetailQuery batchPayDetailQuery) throws ParseException{
 		DateUtil du = new DateUtil();
 		Date beginMonth = du.calcBeginMonth(DateUtil.getNowTime());
@@ -180,12 +179,11 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 		}
 	}
 	@Override
+	@Transactional
 	public int getAndSaveSalary() throws ParseException {
 		List<BatchPayDetail> batchPayDetails = new ArrayList<BatchPayDetail>();
 		//获得所有拥有收入的教师的openid
 		List<String> openIds = moneyTimerDAO.queryAllOpenIds();
-		//通过openid获得教师绑定的支付宝账号
-		List<UserAlipay> userAlipays = userAlipayDAO.queryUserAlipayByOpenIds(openIds);
 		//获得上个月的第一天和最后一天
 		DateUtil du = new DateUtil();
 		Date beginMonth = du.calcBeginMonth(DateUtil.getNowTime());
@@ -194,25 +192,27 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 		//上个月最后天
 		String lase = DateUtil.calcDate(beginMonth, DateUtil.YYYY_MM_DD, 5, -1);
 		//组合批量付款数据
-		for(UserAlipay ua : userAlipays){
-			System.out.println("ua==========="+ua);
+		for(String openId : openIds){
+			UserAlipay alipay = userAlipayDAO.queryUserAlipayByOpenId(openId);
 			//调用用户信息接口获得教师姓名和手机号
-			String httpRest = HttpClient.httpRest(Config.getString("user.server"),Config.getString("userinfo.url")+ua.getOpen_id(), null, null, "GET");
+			System.out.println("调用用户信息接口url="+Config.getString("user.server")+Config.getString("userinfo.url")+openId);
+			String httpRest = HttpClient.httpRest(Config.getString("user.server"),Config.getString("userinfo.url")+openId, null, null, "GET");
 			System.out.println("解析：httpRest=="+httpRest);
 			JSONObject json = JSONObject.fromObject(httpRest);
 			JSONObject object = (JSONObject) json.get("result");
+			if(object.equals(null)) continue;
 			String name = object.getString("name");
 			String phone = object.getString("username");
 			//计算上月收入，包括两部分 直接订单收入和每日课程结算收入
 			double income1;//直接订单收入
 			double income2; //每日课程结算收入
 			try {
-				income1 = financeLogDAO.queryTeacherIncomeForLastMonth(ua.getOpen_id());
+				income1 = financeLogDAO.queryTeacherIncomeForLastMonth(openId);
 			} catch (Exception e) {
 				income1=0.0;
 			}
 			try {
-				income2= settleAccountsDAO.queryTeacherIncomeForLastMonth(ua.getOpen_id());
+				income2= settleAccountsDAO.queryTeacherIncomeForLastMonth(openId);
 			} catch (Exception e) {
 				income2=0.0;
 			}
@@ -223,16 +223,66 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 			bpd.setPhone_num(phone);
 			bpd.setStart_time(lasb);
 			bpd.setEnd_time(lase);
-			bpd.setOpen_id(ua.getOpen_id());
-			bpd.setProceeds_account(ua.getAlipay_account());
-			bpd.setProceeds_name(ua.getAlipay_name());
+			bpd.setOpen_id(openId);
+			if(alipay != null){
+				bpd.setProceeds_account(alipay.getAlipay_account());
+				bpd.setProceeds_name(alipay.getAlipay_name());
+			}
 			bpd.setProceeds_fee(income1+income2);
-			bpd.setRemark("教师收入提现");
+			bpd.setProceeds_time(DateUtil.getNowTime());
+			bpd.setRemark("教师课程收入");
 			
 			batchPayDetailDAO.insertBatchPayDetail(bpd);
 			System.out.println("保存成功！");
 		}
 		return 1;
+	}
+	@Override
+	public ResultMapper querySettleInfoByDate(
+			BatchPayDetailQuery batchPayDetailQuery) {
+		try {
+			if(batchPayDetailQuery.getQueryDate()==null){
+				System.out.println("日期为空，查询上个月对账单..");
+				DateUtil du = new DateUtil();
+				Date beginMonth = du.calcBeginMonth(DateUtil.getNowTime());//获得本月第一天
+				String lasb = DateUtil.calcDate(beginMonth,DateUtil.YYYY_MM_DD, 2, -1);//上个月第一天
+				batchPayDetailQuery.setQueryDate(lasb);
+				int i = batchPayDetailDAO.getCountByDateAndPhone(batchPayDetailQuery);
+				if(i==0){
+					System.out.println("上个月无记录，进行结算保存..");
+					getAndSaveSalary();
+				}
+			}else{
+				String pattern = DateUtil.StringPattern(batchPayDetailQuery.getQueryDate(), DateUtil.YYYY年MM月, DateUtil.YYYY_MM_DD);
+				batchPayDetailQuery.setQueryDate(pattern);
+			}
+			if(batchPayDetailQuery.getPageNum()==0) batchPayDetailQuery.setPageNum(1);
+			if(batchPayDetailQuery.getPageSize() ==0) batchPayDetailQuery.setPageSize(20);
+			int totalCount = batchPayDetailDAO.getCountByDateAndPhone(batchPayDetailQuery);
+			System.out.println("总记录数totalCount=="+totalCount);
+			List<BatchPayDetail> list =new ArrayList<BatchPayDetail>();
+			list= batchPayDetailDAO.getBatchPayDetailsByConditions(batchPayDetailQuery);
+			double sumIncome=0.0;
+			try {
+				sumIncome= batchPayDetailDAO.getSumIncome(batchPayDetailQuery);
+			} catch (NullPointerException e) {
+			}
+			if(list.size()>0){
+				for(BatchPayDetail bpd :list){
+					bpd.setStart_time(DateUtil.StringPattern(bpd.getStart_time(), DateUtil.YYYY_MM_DD, DateUtil.YYYY年MM月DD));
+					bpd.setEnd_time(DateUtil.StringPattern(bpd.getEnd_time(), DateUtil.YYYY_MM_DD, DateUtil.YYYY年MM月DD));
+				}
+			}
+			System.out.println("本期应付薪酬sumIncome="+sumIncome);
+			Pagination page = new Pagination(batchPayDetailQuery.getPageNum(), batchPayDetailQuery.getPageSize(), totalCount, list);
+			page.setTotalFee(sumIncome);
+			this.resultBean.setSucResult(page);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
+		}
+		return this.resultBean;
 	}
 	
 	

@@ -1,6 +1,5 @@
 package com.jishijiajiao.finance.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,6 +14,7 @@ import com.jishijiajiao.finance.entity.MoneyTimer;
 import com.jishijiajiao.finance.entity.SystemStatus;
 import com.jishijiajiao.finance.service.ISettleAccountsService;
 import com.jishijiajiao.finance.util.Config;
+import com.jishijiajiao.finance.util.DateUtil;
 @Service
 public class SettleAccountsServiceImpl implements
 		ISettleAccountsService {
@@ -28,32 +28,32 @@ public class SettleAccountsServiceImpl implements
 	@Override
 	public ResultMapper addDailySettleAccounts(List<DailySettleAccounts> dailySettleAccounts) {
 		try{
+			System.out.println("请求数量==="+dailySettleAccounts.size());
 			for(DailySettleAccounts dsa: dailySettleAccounts){
-				if(dsa.getSaveTime()==null) dsa.setSaveTime(new Date());
+				if(dsa.getSaveTime()==null) dsa.setSaveTime(DateUtil.getNowTime());
 				MoneyTimer moneyTimer = moneyTimerDAO.queryMoneyTimerByOpenId(dsa.getSellOpenId());
-				if(moneyTimer==null){
-					log.info("该老师金额账户无信息 openid==="+dsa.getSellOpenId());
-					continue;
-				}
-				if(moneyTimer.getVariableMoney()<dsa.getSettleMoney()){
-					log.info("该用户可结算金额不足    openId=="+dsa.getSellOpenId());
-					continue;
-				}
 				double settleMoney = Config.getDouble("percentage")*dsa.getSettleMoney();
 				System.out.println("settleMoney=============="+settleMoney);
+				if(moneyTimer == null) moneyTimer = new MoneyTimer();
 				moneyTimer.setVariableMoney(moneyTimer.getVariableMoney()-settleMoney);
 				moneyTimer.setWithdrawalCash(moneyTimer.getWithdrawalCash()+settleMoney);
 				moneyTimer.setTotalSettleMoney(moneyTimer.getTotalSettleMoney()+settleMoney);
 				moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()+moneyTimer.getWithdrawalCash());
+				moneyTimer.setUpdateTime(DateUtil.getNowTime());
 				dsa.setSettleMoney(settleMoney);
 				dailySettleAccountsDAO.insertDailySettleAccounts(dsa);
-				moneyTimerDAO.updateMoneyTimer(moneyTimer);
+				if(moneyTimer.getOpenId() == null){
+					moneyTimer.setOpenId(dsa.getSellOpenId());
+					moneyTimerDAO.saveMoneyTimer(moneyTimer);
+				}else{
+					moneyTimerDAO.updateMoneyTimer(moneyTimer);
+				}
 			}
 			this.resultBean.setSucResult("保存成功！");
 			return this.resultBean;
 		}catch(Exception e){
 			e.printStackTrace();
-			this.resultBean.setFailMsg(SystemStatus.UNAUTHORIZED);
+			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
 			return this.resultBean;
 		}
 	}

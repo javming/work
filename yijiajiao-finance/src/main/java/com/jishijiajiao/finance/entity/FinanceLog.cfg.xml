@@ -62,7 +62,8 @@
     	<if test="size >0"> limit #{begin},#{size}</if>
     </select>
     <select id="queryTeacherTradeLogs" parameterType="com.jishijiajiao.finance.entity.query.FinanceLogQuery" resultMap="resultFinanceLog">
-    	select * from finance_log where sell_openid_isdel=0 and sell_openid=#{sellOpenId} and finance_logs_type in (1,2) 
+    	select * from finance_log where sell_openid_isdel=0 and finance_logs_type in (1,2)
+    	<if test="sellOpenId!=null">and sell_openid=#{sellOpenId}</if> 
     	<if test="startTime!=null">and   trade_time&gt;=#{startTime}</if><if test="endTime !=null">and trade_time&lt;=#{endTime}</if>
     	order by trade_time desc;
     </select>
@@ -81,6 +82,6 @@
     <select id="queryTeacherIncomeForThisMonth" parameterType="String" resultType="double">
     	select sum(withdrawal_cash_change) from finance_log where  sell_openid=#{openId} and month(now())=month(trade_time);
     </select>
-    <cache eviction="FIFO" flushInterval="600000" size="1024" readOnly="true" />
+<!--     <cache eviction="FIFO" flushInterval="600000" size="1024" readOnly="true" /> -->
 </mapper>
 

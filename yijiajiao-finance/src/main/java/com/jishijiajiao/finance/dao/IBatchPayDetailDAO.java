@@ -25,4 +25,7 @@ public interface IBatchPayDetailDAO {
 	 *@param bpd
 	 */
 	void updateNumber(BatchPayDetail bpd);
+	
+	int getCountByDateAndPhone(BatchPayDetailQuery batchPayDetailQuery);
+	double getSumIncome(BatchPayDetailQuery batchPayDetailQuery);
 }

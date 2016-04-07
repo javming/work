@@ -23,7 +23,9 @@ public enum SystemStatus {
 	BATCH_DETAIL_ERROR(400011,"批量付款详情数据异常！"),
 	USER_ALIPAY_HAS(400012,"该账户已绑定支付宝账号"),
 	PARAM_NULL(400013,"有数据为空，请验证！"),
-	PHONE_NOT_HAS(400014,"手机号码有误或不存在");
+	PHONE_NOT_HAS(400014,"手机号码有误或不存在"),
+	PHONE_NOT_NULL(400015,"手机号码不能为空"),
+	DATE_NOT_NULL(400016,"日期不能为空");
 	SystemStatus(int status, String str) {
 		setCode(status);
 		setStr(str);

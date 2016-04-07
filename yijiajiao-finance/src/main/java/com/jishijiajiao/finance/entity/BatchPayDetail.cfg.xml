@@ -5,8 +5,8 @@
 <mapper namespace="com.jishijiajiao.finance.dao.IBatchPayDetailDAO">
 	
 	<insert id="insertBatchPayDetail" parameterType="com.jishijiajiao.finance.entity.BatchPayDetail" useGeneratedKeys="true">
-		insert into batch_pay_detail(teacher_name,phone_num,be_time,running_no,proceeds_account,proceeds_name,proceeds_fee,remark,open_id,batch_no) 
-		values(#{teacher_name},#{phone_num},#{be_time},#{running_no},#{proceeds_account},#{proceeds_name},#{proceeds_fee},#{remark},#{open_id},#{batch_no});
+		insert into batch_pay_detail(teacher_name,phone_num,start_time,end_time,running_no,proceeds_account,proceeds_name,proceeds_fee,remark,open_id,batch_no,proceeds_time) 
+		values(#{teacher_name},#{phone_num},#{start_time},#{end_time},#{running_no},#{proceeds_account},#{proceeds_name},#{proceeds_fee},#{remark},#{open_id},#{batch_no},#{proceeds_time});
 	</insert>
 	<update id="updateNumber" parameterType="com.jishijiajiao.finance.entity.BatchPayDetail">
 		update batch_pay_detail set running_no=#{running_no} and batch_no=#{batch_no} where open_id=#{open_id} and start_time=#{start_time};
@@ -18,9 +18,19 @@
 		select * from batch_pay_detail where batch_no=#{batch_no};
 	</select>
 	<select id="getBatchPayDetailsByConditions" parameterType="com.jishijiajiao.finance.entity.query.BatchPayDetailQuery" resultType="com.jishijiajiao.finance.entity.BatchPayDetail">
-		select * from batch_pay_detail where is_dispose=#{is_dispose} and start_time=#{start_time} limit #{startRow},#{pageSize};
+		select * from batch_pay_detail where start_time=#{queryDate} 
+		<if test="phone_num!=null"> and phone_num=#{phone_num}</if> limit #{startRow},#{pageSize};
 	</select>
 	<select id="getCountByConditions" parameterType="com.jishijiajiao.finance.entity.query.BatchPayDetailQuery" resultType="int">
 		select count(*) from batch_pay_detail where is_dispose=#{is_dispose} and start_time=#{start_time};
+	</select>
+	
+	<select id="getCountByDateAndPhone" parameterType="com.jishijiajiao.finance.entity.query.BatchPayDetailQuery" resultType="int">
+		select count(*) from batch_pay_detail where start_time=#{queryDate} 
+		<if test="phone_num!=null"> and phone_num=#{phone_num}</if>
+	</select>
+	<select id="getSumIncome" parameterType="com.jishijiajiao.finance.entity.query.BatchPayDetailQuery" resultType="double">
+		select sum(proceeds_fee) from batch_pay_detail where start_time=#{queryDate} 
+		<if test="phone_num!=null"> and phone_num=#{phone_num}</if>
 	</select>
 </mapper>
