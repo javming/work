@@ -19,7 +19,10 @@
 	</select>
 	<select id="getBatchPayDetailsByConditions" parameterType="com.jishijiajiao.finance.entity.query.BatchPayDetailQuery" resultType="com.jishijiajiao.finance.entity.BatchPayDetail">
 		select * from batch_pay_detail where start_time=#{queryDate} 
-		<if test="phone_num!=null"> and phone_num=#{phone_num}</if> limit #{startRow},#{pageSize};
+		<if test="phone_num!=null"> and phone_num=#{phone_num}</if>
+		<if test="startRow!=null and startRow!='' and startRow!=0">
+			limit #{startRow},#{pageSize}
+		</if>
 	</select>
 	<select id="getCountByConditions" parameterType="com.jishijiajiao.finance.entity.query.BatchPayDetailQuery" resultType="int">
 		select count(*) from batch_pay_detail where is_dispose=#{is_dispose} and start_time=#{start_time};

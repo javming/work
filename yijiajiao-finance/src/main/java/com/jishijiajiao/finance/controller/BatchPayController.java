@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,4 +134,16 @@ public class BatchPayController {
 	public ResultMapper getSalaryStatement(BatchPayDetailQuery batchPayDetailQuery){
 		return batchPayService.querySettleInfoByDate(batchPayDetailQuery);
 	}
+	@GET
+	@Path("/salaryStatementByd")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultMapper getSalaryStatement(@QueryParam("queryDate") String queryDate){
+		return batchPayService.querySettleInfoByDate(queryDate);
+	}
+	
+	
+	
+	
+	
 }

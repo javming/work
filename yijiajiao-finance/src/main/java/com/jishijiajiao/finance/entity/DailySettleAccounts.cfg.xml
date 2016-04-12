@@ -32,5 +32,9 @@
 	<select id="queryTeacherIncomeForThisMonth" parameterType="String" resultType="double">
 		select sum(settle_money) from daily_settle_accounts where  sell_open_id=#{openId} and month(now())=month(save_time);
 	</select>
+	
+	<select id="queryTeacherIncomeByMonth" parameterType="com.jishijiajiao.finance.entity.query.QueryParam" resultType="double">
+		select sum(settle_money) from daily_settle_accounts where  sell_open_id=#{oepnId} and month(#{date})=month(save_time)
+	</select>
 </mapper>
 

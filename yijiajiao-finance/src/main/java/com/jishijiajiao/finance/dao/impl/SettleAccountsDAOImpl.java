@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.jishijiajiao.finance.dao.ISettleAccountsDAO;
 import com.jishijiajiao.finance.entity.DailySettleAccounts;
+import com.jishijiajiao.finance.entity.query.QueryParam;
 @Repository
 public class SettleAccountsDAOImpl implements ISettleAccountsDAO {
 	@Autowired
@@ -22,6 +23,11 @@ public class SettleAccountsDAOImpl implements ISettleAccountsDAO {
 	@Override
 	public double queryTeacherIncomeForThisMonth(String openId) {
 		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IDailySettleAccountsDAO.queryTeacherIncomeForThisMonth", openId);
+	}
+	@Override
+	public double queryTeacherIncomeByMonth(QueryParam qp) {
+		// TODO Auto-generated method stub
+		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IDailySettleAccountsDAO.queryTeacherIncomeByMonth",qp);
 	}
 	
 	

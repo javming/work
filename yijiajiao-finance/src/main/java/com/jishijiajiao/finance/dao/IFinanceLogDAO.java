@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.jishijiajiao.finance.entity.FinanceLog;
 import com.jishijiajiao.finance.entity.query.FinanceLogQuery;
+import com.jishijiajiao.finance.entity.query.QueryParam;
 
 /**
  * @description IFinanceLogDAO
@@ -78,4 +79,13 @@ public interface IFinanceLogDAO {
 	 *@return
 	 */
 	FinanceLog queryFinanceLogByOrderNum(String orderNumber);
+	/**
+	 *@description	获得指定月的教师收入
+	 *@date 2016-4-12
+	 *@return double
+	 *@param openId
+	 *@param month 格式 yyyy-MM-DD
+	 *@return
+	 */
+	double queryTeacherIncomeByMonth(QueryParam qp);
 }

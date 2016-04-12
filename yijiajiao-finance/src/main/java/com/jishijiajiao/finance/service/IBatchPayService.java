@@ -54,11 +54,19 @@ public interface IBatchPayService {
 	 */
 	int getAndSaveSalary() throws ParseException;
 	/**
-	 *@description  通过日期几手机号获得教师工资对账单
+	 *@description  通过日期几手机号获得教师工资对账单（分页查询）
 	 *@date 2016-4-6
 	 *@return ResultMapper
 	 *@param batchPayDetailQuery
 	 *@return
 	 */
 	ResultMapper querySettleInfoByDate(BatchPayDetailQuery batchPayDetailQuery);
+	/**
+	 *@description 通过日期几手机号获得教师工资对账单(不分页，查所有列表)
+	 *@date 2016-4-11
+	 *@return ResultMapper
+	 *@param queryDate
+	 *@return
+	 */
+	ResultMapper querySettleInfoByDate(String queryDate);
 }

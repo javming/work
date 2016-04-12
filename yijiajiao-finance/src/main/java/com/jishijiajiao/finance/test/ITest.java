@@ -20,9 +20,12 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.jishijiajiao.finance.dao.IFinanceLogDAO;
+import com.jishijiajiao.finance.dao.impl.FinanceLogDAOImpl;
 import com.jishijiajiao.finance.entity.BatchPayDetail;
 import com.jishijiajiao.finance.entity.FinanceLog;
 import com.jishijiajiao.finance.entity.WaresSlave;
+import com.jishijiajiao.finance.entity.query.QueryParam;
 import com.jishijiajiao.finance.service.IBatchPayService;
 import com.jishijiajiao.finance.util.Config;
 import com.jishijiajiao.finance.util.DateUtil;
@@ -46,7 +49,7 @@ public class ITest {
 	     System.out.println("year=="+year);
 	     System.out.println("dow=="+dow);
 	     System.out.println("dom=="+dom);
-	     System.out.println("doy=="+doy);*/
+	     System.out.println("doy=="+doy);
 		DateUtil du = new DateUtil();
 		//获得本月第一天
 		Date beginMonth = du.calcBeginMonth(DateUtil.getNowTime());
@@ -61,7 +64,9 @@ public class ITest {
 		//上个月最后天
 		String lase = DateUtil.calcDate(beginMonth, DateUtil.YYYY_MM_DD, 5, -1);
 		System.out.println(lasb);
-		System.out.println(lase);
+		System.out.println(lase);*/
+		int i = DateUtil.checkLastMonth("2016年03月", DateUtil.YYYY年MM月);
+		System.out.println(i);
 	}
 	@Test
 	public void testMath(){
@@ -121,9 +126,12 @@ public class ITest {
 	@Test
 	public void testmodBatchPayDetailAndMoneyTiemer(){
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-		IBatchPayService batchPayService=(IBatchPayService) context.getBean("batchPayService");
-		System.out.println("batchPayService============="+batchPayService);
-		batchPayService.modBatchPayDetailAndMoneyTiemer("20160321034826531855");
+		IFinanceLogDAO  financeLogDAO = (IFinanceLogDAO) context.getBean("financeLogDAO");
+		QueryParam qp = new QueryParam();
+		qp.setDate("2016-03-01");
+		qp.setOpenId("0fe3858f-df02-402c-99ad-4ebc5a031e50");
+		double d = financeLogDAO.queryTeacherIncomeByMonth(qp );
+		System.out.println(d);
 	}
 
 }

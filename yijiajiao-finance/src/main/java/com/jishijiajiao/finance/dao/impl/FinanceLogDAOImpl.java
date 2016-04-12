@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.jishijiajiao.finance.dao.IFinanceLogDAO;
 import com.jishijiajiao.finance.entity.FinanceLog;
 import com.jishijiajiao.finance.entity.query.FinanceLogQuery;
+import com.jishijiajiao.finance.entity.query.QueryParam;
 
 @Repository("financeLogDAO")
 public class FinanceLogDAOImpl implements IFinanceLogDAO {
@@ -64,6 +65,11 @@ public class FinanceLogDAOImpl implements IFinanceLogDAO {
 	@Override
 	public FinanceLog queryFinanceLogByOrderNum(String orderNumber) {
 		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IFinanceLogDAO.queryFinanceLogByOrderNum", orderNumber);
+	}
+
+	@Override
+	public double queryTeacherIncomeByMonth(QueryParam qp) {
+		return sessionTemplate.selectOne("com.jishijiajiao.finance.dao.IFinanceLogDAO.queryTeacherIncomeByMonth", qp);
 	}
 
 }

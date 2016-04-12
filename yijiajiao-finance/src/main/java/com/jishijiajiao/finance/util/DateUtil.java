@@ -454,6 +454,33 @@ public class DateUtil {
 		gc.add(5, -1);
 		return gc.getTime();
 	}
+	/**
+	 *@description	判断所给日期是不是当前月
+	 *@date 2016-4-11
+	 *@return int     是本月返回1，不是本月返回0
+	 *@param date
+	 *@param pattern 所给日期字符串格式
+	 *@return
+	 * @throws ParseException 
+	 */
+	public static int checkThisMonth(String date,String pattern) throws ParseException{
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		String da = df.format(new Date());
+		System.out.println("当前日期=="+da);
+		if(da.equals(date)) return 1;
+		return 0;
+	}
+	
+	public static int checkLastMonth(String date,String pattern){
+		Calendar cal = Calendar.getInstance(); 
+		cal.add(cal.MONTH, -1); 
+		Date currentTime=cal.getTime();//当前时间的上个月时间
+		SimpleDateFormat sdf=new SimpleDateFormat(pattern);
+		String curTime=sdf.format(currentTime);
+		System.out.println("上个月的时间为："+curTime);
+		if(curTime.equals(date)) return 1;
+		return 0;
+	}
 
 	/**
 	 * @param args
