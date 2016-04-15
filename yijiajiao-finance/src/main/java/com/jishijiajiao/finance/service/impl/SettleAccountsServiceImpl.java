@@ -13,6 +13,7 @@ import com.jishijiajiao.finance.entity.DailySettleAccounts;
 import com.jishijiajiao.finance.entity.MoneyTimer;
 import com.jishijiajiao.finance.entity.SystemStatus;
 import com.jishijiajiao.finance.service.ISettleAccountsService;
+import com.jishijiajiao.finance.util.Arith;
 import com.jishijiajiao.finance.util.Config;
 import com.jishijiajiao.finance.util.DateUtil;
 @Service
@@ -32,13 +33,13 @@ public class SettleAccountsServiceImpl implements
 			for(DailySettleAccounts dsa: dailySettleAccounts){
 				if(dsa.getSaveTime()==null) dsa.setSaveTime(DateUtil.getNowTime());
 				MoneyTimer moneyTimer = moneyTimerDAO.queryMoneyTimerByOpenId(dsa.getSellOpenId());
-				double settleMoney = Config.getDouble("percentage")*dsa.getSettleMoney();
+				double settleMoney =Arith.mul(Config.getDouble("percentage"),dsa.getSettleMoney());
 				System.out.println("settleMoney=============="+settleMoney);
 				if(moneyTimer == null) moneyTimer = new MoneyTimer();
-				moneyTimer.setVariableMoney(moneyTimer.getVariableMoney()-settleMoney);
-				moneyTimer.setWithdrawalCash(moneyTimer.getWithdrawalCash()+settleMoney);
-				moneyTimer.setTotalSettleMoney(moneyTimer.getTotalSettleMoney()+settleMoney);
-				moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()+moneyTimer.getWithdrawalCash());
+				moneyTimer.setVariableMoney(Arith.sub(moneyTimer.getVariableMoney(),settleMoney));
+				moneyTimer.setWithdrawalCash(Arith.add(settleMoney,moneyTimer.getWithdrawalCash()));
+				moneyTimer.setTotalSettleMoney(Arith.add(settleMoney,moneyTimer.getTotalSettleMoney()));
+				moneyTimer.setTotalMoney(Arith.add(moneyTimer.getVariableMoney(),moneyTimer.getWithdrawalCash()));
 				moneyTimer.setUpdateTime(DateUtil.getNowTime());
 				dsa.setSettleMoney(settleMoney);
 				dailySettleAccountsDAO.insertDailySettleAccounts(dsa);
@@ -48,14 +49,14 @@ public class SettleAccountsServiceImpl implements
 				}else{
 					moneyTimerDAO.updateMoneyTimer(moneyTimer);
 				}
+				System.out.println("修改的数据："+moneyTimer);
 			}
 			this.resultBean.setSucResult("保存成功！");
-			return this.resultBean;
 		}catch(Exception e){
 			e.printStackTrace();
 			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
-			return this.resultBean;
 		}
+		return this.resultBean;
 	}
 
 }

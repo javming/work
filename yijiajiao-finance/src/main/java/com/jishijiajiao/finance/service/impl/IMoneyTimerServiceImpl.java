@@ -14,6 +14,7 @@ import com.jishijiajiao.finance.dao.ISettleAccountsDAO;
 import com.jishijiajiao.finance.entity.MoneyTimer;
 import com.jishijiajiao.finance.entity.SystemStatus;
 import com.jishijiajiao.finance.service.IMoneyTimerService;
+import com.jishijiajiao.finance.util.Arith;
 import com.jishijiajiao.finance.util.DateUtil;
 
 @Service("moneyTimerService")
@@ -77,6 +78,7 @@ public class IMoneyTimerServiceImpl implements IMoneyTimerService {
 			double income2=0.0; 
 			if(now.getTime()>= beginMonth.getTime() && now.getTime() < ten.getTime()){
 				//计算本期账户余额,如果查询日期在本月1号到11号0点之前，本期余额为上个月收入
+				System.out.println("如果查询日期在本月1号到11号0点之前，本期余额为上个月收入");
 				try {
 					income1 = financeLogDAO.queryTeacherIncomeForLastMonth(openId);
 				} catch (Exception e) {
@@ -88,6 +90,7 @@ public class IMoneyTimerServiceImpl implements IMoneyTimerService {
 					income2=0.0;
 				}
 			}else {
+				System.out.println("如果查询日期在本月11号0点到月末之前，本期余额为本月收入");
 				//计算本期账户余额,如果查询日期在本月11号0点到月末之前，本期余额为本月收入
 				try {
 					income1 = financeLogDAO.queryTeacherIncomeForThisMonth(openId);
@@ -100,16 +103,14 @@ public class IMoneyTimerServiceImpl implements IMoneyTimerService {
 					income2=0.0;
 				}
 			}
-			moneyTimer.setWithdrawalCash(income1+income2);
+			moneyTimer.setWithdrawalCash(Arith.add(income1, income2));
 			log.info("查询数据为 moneyTimer=="+moneyTimer);
 			this.resultMapper.setSucResult(moneyTimer);
-			return this.resultMapper;
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.resultMapper.setFailMsg(SystemStatus.SERVER_ERROR);
-			return this.resultMapper;
 		}
-
+		return this.resultMapper;
 	}
 
 	@Override

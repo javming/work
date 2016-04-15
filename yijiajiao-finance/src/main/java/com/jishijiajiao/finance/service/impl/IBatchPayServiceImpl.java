@@ -32,6 +32,7 @@ import com.jishijiajiao.finance.entity.query.BatchPayDetailQuery;
 import com.jishijiajiao.finance.entity.query.QueryParam;
 import com.jishijiajiao.finance.page.Pagination;
 import com.jishijiajiao.finance.service.IBatchPayService;
+import com.jishijiajiao.finance.util.Arith;
 import com.jishijiajiao.finance.util.Config;
 import com.jishijiajiao.finance.util.DateUtil;
 import com.jishijiajiao.finance.util.HttpClient;
@@ -81,7 +82,7 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 				}else{
 					detail_data.append(bpd.getPayString());	
 				}
-				batch_fee+=bpd.getProceeds_fee();
+				batch_fee=Arith.add(batch_fee,bpd.getProceeds_fee());
 				running++;
 			}
 			
@@ -173,8 +174,8 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 		for(BatchPayDetail bpd :batchPayDetails){
 			MoneyTimer moneyTimer = moneyTimerDAO.queryMoneyTimerByOpenId(bpd.getOpen_id());
 			log.info("moneyTimer=="+moneyTimer);
-			moneyTimer.setWithdrawalCash(moneyTimer.getWithdrawalCash()-bpd.getProceeds_fee());
-			moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()+moneyTimer.getWithdrawalCash());
+			moneyTimer.setWithdrawalCash(Arith.sub(moneyTimer.getWithdrawalCash(),bpd.getProceeds_fee()));
+			moneyTimer.setTotalMoney(Arith.add(moneyTimer.getVariableMoney(),moneyTimer.getWithdrawalCash()));
 			moneyTimer.setUpdateTime(DateUtil.getNowTime());
 			moneyTimerDAO.updateMoneyTimer(moneyTimer);
 		}
@@ -200,10 +201,11 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 			String httpRest = HttpClient.httpRest(Config.getString("user.server"),Config.getString("userinfo.url")+openId, null, null, "GET");
 			System.out.println("解析：httpRest=="+httpRest);
 			JSONObject json = JSONObject.fromObject(httpRest);
-			JSONObject object = (JSONObject) json.get("result");
+			Object object = json.get("result");
 			if(object.equals(null)) continue;
-			String name = object.getString("name");
-			String phone = object.getString("username");
+			JSONObject job = (JSONObject)object;
+			String name = job.getString("name");
+			String phone = job.getString("username");
 			//计算上月收入，包括两部分 直接订单收入和每日课程结算收入
 			double income1;//直接订单收入
 			double income2; //每日课程结算收入
@@ -217,7 +219,7 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 			} catch (Exception e) {
 				income2=0.0;
 			}
-			System.out.println("teacher_income========="+(income1+income2));
+			System.out.println("teacher_income========="+(Arith.add(income1, income2)));
 			if((income1+income2)<=0) continue;
 			BatchPayDetail bpd = new BatchPayDetail();
 			bpd.setTeacher_name(name);
@@ -229,7 +231,7 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 				bpd.setProceeds_account(alipay.getAlipay_account());
 				bpd.setProceeds_name(alipay.getAlipay_name());
 			}
-			bpd.setProceeds_fee(income1+income2);
+			bpd.setProceeds_fee(Arith.add(income1, income2));
 			bpd.setProceeds_time(DateUtil.getNowTime());
 			bpd.setRemark("教师课程收入");
 			
@@ -317,7 +319,7 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 		return this.resultBean;
 	}
 	
-	public int getAndSaveSalary(String month) throws ParseException{
+/*	public int getAndSaveSalary(String month) throws ParseException{
 		DateUtil du = new DateUtil();
 		String beginMonth = DateUtil.dateToString(du.calcBeginMonth(month), DateUtil.YYYY_MM_DD);
 		String endMonth = DateUtil.dateToString(du.calcEndMonth(month), DateUtil.YYYY_MM_DD);
@@ -372,5 +374,5 @@ public class IBatchPayServiceImpl implements IBatchPayService {
 			System.out.println("保存成功！");
 		}
 		return 1;
-	}
+	}*/
 }

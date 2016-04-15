@@ -23,102 +23,199 @@ http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/consumeAnswerTime
 3、测试添加购买课程
 http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/orderFinanceLog
 {
- "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "sellOpenId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "tradeTime":"2016-01-20 16:15:00",
- "orderNumber":"160121104248912925",
- "commodityId":"155",
+ "openId":"75b067b0-bd15-488e-a840-3e54653aa3f4",
+ "sellOpenId":"33ca24b9-af1a-47a6-9dcd-4072d25f305f",
+ "teacherPhoneNum":"13910101006",
+ "studentPhoneNum":"15011358991",
+ "orderNumber":"160121104248912936",
+ "trade_no":"106453123156436",
+ "commodityId":"176",
  "commodityType":1,
- "curriculumName":"一对一课",
- "curriculumInfo":"高中物理",
+ "curriculumName":"高一历史",
+ "curriculumInfo":"高中一年级历史",
  "curriculumType":1,
  "teachMode":0,
- "totalPrice":100.0,
+ "totalPrice":10.0,
  "tradeType":1,
  "accountNumber":"92354864@qq.com"
 }
 
 4.测试每日结算
-http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/dailySettleAccount
+http://192.168.1.11:22120/yijiajiao-finance/settleaccounts/dailysettle
 [
 {
- "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "sellOpenId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "orderNumber":"12121212131415926",
- "commodityId":"12121212131415926",
- "waresId":1,
- "slaveId":4,
- "settleMoney":5.0,
- "startTime":1453279381000,
- "endTime":1453279381000,
- "curriculumInfo":"这节课主要内容讲的是岳飞惨死风波亭" 
+ "openId":"75b067b0-bd15-488e-a840-3e54653aa3f4",
+ "sellOpenId":"28a72c31-fc4e-45b7-9478-9d07381a4731",
+ "orderNumber":"160405104248912935",
+ "commodityId":"175",
+ "curriculumType":"1",
+ "curriculumName":"高一数学", 
+ "curriculumInfo":"高中一年级数学",
+ "slaveId":1,
+ "settleMoney":2.5,
+ "startTime":"2016-04-25 14:00:00",
+ "endTime":"2016-04-25 14:40:00"
 },
 {
- "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "sellOpenId":"1f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "orderNumber":"12121212131415926",
- "commodityId":"12121212131415926",
- "waresId":1,
- "slaveId":4,
- "settleMoney":5.0,
- "startTime":1453279381000,
- "endTime":1453279381000,
- "curriculumInfo":"这节课主要内容讲的是岳飞惨死风波亭" 
-},
-{
- "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "sellOpenId":"6f7efea-fcb2-4a55-8bc7-12b6055e49ed",
- "orderNumber":"12121212131415926",
- "commodityId":"12121212131415926",
- "waresId":1,
- "slaveId":4,
- "settleMoney":10000.0,
- "startTime":1453279381000,
- "endTime":1453279381000,
- "curriculumInfo":"这节课主要内容讲的是岳飞惨死风波亭" 
+ "openId":"75b067b0-bd15-488e-a840-3e54653aa3f4",
+ "sellOpenId":"28a72c31-fc4e-45b7-9478-9d07381a4731",
+ "orderNumber":"160405104248912935",
+ "commodityId":"175",
+ "curriculumType":"1",
+ "curriculumName":"高一数学", 
+ "curriculumInfo":"高中一年级数学",
+ "slaveId":2,
+ "settleMoney":2.5,
+ "startTime":"2016-04-26 14:00:00",
+ "endTime":"2016-04-26-14:40:00"
 }
 ]
 
 5、测试退款
 http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/refundMoney
 {
- "openId":"5f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "sellOpenId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
- "orderNumber":"160121104248912925",
- "commodityId":"155",
- "curriculumName":"一对一课",
- "curriculumInfo":"高中物理",
- "totalPrice":75.0,
+ "openId":"75b067b0-bd15-488e-a840-3e54653aa3f4",
+ "sellOpenId":"33ca24b9-af1a-47a6-9dcd-4072d25f305f",
+ "teacherPhoneNum":"13910101006",
+ "studentPhoneNum":"15011358991",
+ "orderNumber":"160121104248912936",
+ "trade_no":"106453123156456",
+ "commodityId":"176",
+ "curriculumName":"高一历史",
+ "curriculumInfo":"高中一年级历史",
+ "totalPrice":7.5,
  "accountNumber":"92354864@qq.com",
  "waresSlaves":[
 	{
-		"waresId":1,
 		"slaveId":2,
-		"startTime":"2016-01-28 14:00:00",
-		"endTime":"2016-01-28 15:00:00" 
+		"startTime":"2016-04-28 14:00:00",
+		"endTime":"2016-04-28 15:00:00" 
 	},
-    {
-        "waresId":1,
-        "slaveId":3,
-        "startTime":"2016-01-20 15:00:00",
-        "endTime":"2016-01-20 16:00:00" 
-    },
-    {
-        "waresId":1,
-        "slaveId":4,
-        "startTime":"2016-01-28 16:00:00",
-        "endTime":"2016-01-28 17:00:00" 
-    }
+	{
+		"slaveId":3,
+		"startTime":"2016-04-28 14:00:00",
+		"endTime":"2016-04-28 15:00:00" 
+	},
+	{
+		"slaveId":4,
+		"startTime":"2016-04-28 14:00:00",
+		"endTime":"2016-04-28 15:00:00" 
+	}
    ]
 }
 
 
 6、测试账户提现
-http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/withdrawsCash
+http://192.168.1.11:22120/yijiajiao-finance/FinanceLog/monthSettleAccounts
 {
-"openId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
-"teacherOutput":5.5
+[{
+"sellOpenId":"4f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+"accountNumber":"903580361@qq.com",
+"teacherOutput":20
+},
+{
+"sellOpenId":"6f79efea-fcb2-4a55-8bc7-12b6055e49ed",
+"accountNumber":"903580361@qq.com",
+"teacherOutput":50
 }
+]
+}
+
+7、测试批量转账到支付宝接口
+[
+{
+"running_no":"10001",
+"proceeds_account":"123456@qq.com",
+"proceeds_name":"zhangsan",
+"proceeds_fee":"0.01",
+"remark":"salary"
+},
+{
+"running_no":"10002",
+"proceeds_account":"1223456@qq.com",
+"proceeds_name":"lisi",
+"proceeds_fee":"0.01",
+"remark":"salary"
+},
+{
+"running_no":"10003",
+"proceeds_account":"1234567@qq.com",
+"proceeds_name":"wangwu",
+"rpoceeds_fee":"0.01",
+"remark":"salary"
+}
+]
+
+8、测试绑定支付宝账号
+http://localhost:8080/yijiajiao-finance/userAlipay/adduser
+{
+"open_id":"",
+"alipay_account":"",
+"alipay_name":""
+}
+
+
+
+
+9.发工资  http://192.168.1.11:22120/yijiajiao-finance/batchpay/paysalary
+
+10.测试批量转账回调
+{
+"batch_no":"20160329110017994673",
+"pay_user_id":"2088511053262171",
+"pay_account_no":"20885110532621710156",
+"notify_type":"batch_trans_notify",
+"notify_id":"9bb95f89b54543eb2bf9bf4dff301e9k0h",
+"success_details":"^0.01^S^^20160218541913978^20160218170531",
+"is_dispose":1
+}
+
+11.测试通过手机号和时间获取教师交易详情列表
+{
+"startTime":"2016-03-27",
+"endTime":"2016-04-02",
+"phoneNum":"18810052153",
+"ray":1
+}
+
+12.获得根据条件获得教师工资对账单
+{
+"queryDate":"2016年04月",
+"phone_num":"",
+"pageNum":"",
+"pageSize":""
+}
+签名1
+https://mapi.alipay.com/gateway.do?_input_charset=utf-8&account_name=北京易教空间教育科技股份有限公司&batch_fee=0.01&batch_no=20160217025804042219&batch_num=1&detail_data=10002^903580361@qq.com^赵明^0.01^salary&email=pay@cuotiben.net.cn&partner=2088511053262171&pay_date=20160217&service=batch_trans_notify&sign=Y%2Ff%2BmkE%2BTWFNxRIK33MSGlKnaAQArhyBTRbYJxmD0%2F4FirdMkiNceWFqvLYsLShf0Zleii9OMOGmSFWGCT3f5c09IMThkxWdB6geRZmkA70FWQYDJSlLTC%2BTtckgw7j1HuQoNCGXX42p3c761mYMUSR51jrbi2%2BkakS7628UBY4%3D&sign_type=RSA
+https://mapi.alipay.com/gateway.do?_input_charset=utf-8&account_name=北京易教空间教育科技股份有限公司&batch_fee=0.01&batch_no=20160217032452835259&batch_num=1&detail_data=10002^903580361@qq.com^赵明^0.01^salary&email=pay@cuotiben.net.cn&partner=2088511053262171&pay_date=20160217&service=batch_trans_notify&sign=ym02s6C%2F46E4Pn7p2L0zM0lpx67hqgnxsZNB8NKxt2nDo%2FF3QBoWoPzlDZMcEjvncnCH2hb46RGHnryzzp4fcGY1J98WIQQ8so2AtK18oGGTyKz9QkusKXQ%2BiDJvE%2BvBONrIB5HUGtc5ANDcXz0D02bFLThao8bljCWtgqlpe04%3D&sign_type=RSA
+
+
+https://mapi.alipay.com/gateway.do?_input_charset=utf-8&account_name=北京易教空间教育科技股份有限公司&batch_fee=0.01&batch_no=20160217033834494418&batch_num=1&detail_data=10003^903580361@qq.com^赵明^0.01^salary&email=pay@cuotiben.net.cn&partner=2088511053262171&pay_date=20160217&service=batch_trans_notify&sign=H2swEhxqwvVfttXRiJ8xeouqXxCnhi1lufU3etWx68k0bJqEvytdSJ%2FwJGbrcWclT6Ds6CmWR21d6OGCDlCbYmctXHcB%2Fckrg%2FCWCf2GDOwiI0gErzHXtFBFfd6BFjcNDt0nWU%2FSUmDoX6xp25isImjmjsBczXX6mbZmv2xBq20%3D&sign_type=RSA
+https://mapi.alipay.com/gateway.do?_input_charset=utf-8&account_name=北京易教空间教育科技股份有限公司&batch_fee=0.01&batch_no=20160217033717874260&batch_num=1&detail_data=10003^903580361@qq.com^赵明^0.01^salary&email=pay@cuotiben.net.cn&partner=2088511053262171&pay_date=20160217&service=batch_trans_notify&sign=ol%2F7ZKY%2BYjQdQSsdCzMo7D5chh0KsNP3rfWW1Q6tIFUGsPhlIhofWOI5NFlEplRhZurOEGuignQwozInxCv3d0QXaH5J8NN%2B%2BIqoyHRYbrAs5ErPoEOPObSO2Rbg%2FvB7bvzmHrC5Vi1jxMcYT8JFyemptO%2BdV6NJrs%2FQsD%2BghIA%3D&sign_type=RSA
+
+
+http://192.168.1.11:22120/yijiajiao-finance/batchpay/status.json?notify_time=2009-08-12+11%3A08%3A32&notify_type=%E4%BA%A4%E6%98%93%E7%8A%B6%E6%80%81%E5%90%8C%E6%AD%A5%E9%80%9A%E7%9F%A5%28trade_status_sync%29&notify_id=70fec0c2730b27528665af4517c27b95&sign_type=DSA&sign=_p_w_l_h_j0b_gd_aejia7n_ko4_m%252Fu_w_jd3_nx_s_k_mxus9_hoxg_y_r_lunli_pmma29_t_q%3D%3D&batch_no=20100101001&pay_account_no=maomao%40alipay.com&pay_user_id=2088002464631181&pay_user_name=%C3%AB%C3%AB&success_details=0315001%5Egonglei1%40handsome.com.cn%5E%E9%BE%9A%E6%9C%AC%E6%9E%97%5E20.00%5ES%5Enull%5E200810248427067%5E20081024143652%7C&fail_details=0315006%5Exinjie_xj%40163.com%5E%E6%98%9F%E8%BE%B0%E5%85%AC%E5%8F%B81%5E20.00%5EF%5ETXN_RESULT_TRANSFER_OUT_CAN_NOT_EQUAL_IN%5E200810248427065%5E20081024143651%7C
+http://localhost:8080/yijiajiao-finance/batchpay/status.json?sign=B38xRU5PqwoJwrOgOrrSfKJtG5y8ydd7flti%2B2bk6TFV%2FRU3rXCFVS0KodFuXFUgXNgcMqk%2BMaFVd1RWo%2FftFXy%2FCGzaoodku8Vatx%2FAT%2BDeBsJTrSawW1wIImnsTq41tO2bDlSRQUJbIrc%2FeW5mQQ%2BSpAj7luMmTX%2BojhdKcgg%3D&notify_time=2016-02-18+17%3A19%3A47&pay_user_id=2088511053262171&pay_user_name=%E5%8C%97%E4%BA%AC%E6%98%93%E6%95%99%E7%A9%BA%E9%97%B4%E6%95%99%E8%82%B2%E7%A7%91%E6%8A%80%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8&sign_type=RSA&success_details=02180505451000%5E903580361%40qq.com%5E%E8%B5%B5%E6%98%8E%5E0.01%5ES%5E%5E20160218541913978%5E20160218170531%7C&notify_type=batch_trans_notify&pay_account_no=20885110532621710156&notify_id=9bb95f89b54543eb2bf9bf4dff301e9k0h&batch_no=20160218050545576411
+
+
+
+/opt/yijiajiao/yijiajiao-finance/webapps/yijiajiao-finance/WEB-INF/classes/com/jishijiajiao/alipay/util下面的AlipayNotify.class
+/opt/yijiajiao/yijiajiao-finance/webapps/yijiajiao-finance/WEB-INF/classes/com/jishijiajiao/finance/controller下面的BatchPay.class
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 停止jetty     bin/jetty.sh stop
@@ -152,6 +249,6 @@ ls 查看文件
  </bean>  
  <bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">  
      <property name="mapperInterface" value="com.springMyBatis.system.dao.UserDao"></property>  
-     <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>  
+     <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>   
  </bean>
 

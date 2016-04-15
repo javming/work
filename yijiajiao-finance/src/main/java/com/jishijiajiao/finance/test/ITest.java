@@ -27,6 +27,7 @@ import com.jishijiajiao.finance.entity.FinanceLog;
 import com.jishijiajiao.finance.entity.WaresSlave;
 import com.jishijiajiao.finance.entity.query.QueryParam;
 import com.jishijiajiao.finance.service.IBatchPayService;
+import com.jishijiajiao.finance.util.Arith;
 import com.jishijiajiao.finance.util.Config;
 import com.jishijiajiao.finance.util.DateUtil;
 import com.jishijiajiao.finance.util.HttpClient;
@@ -133,5 +134,16 @@ public class ITest {
 		double d = financeLogDAO.queryTeacherIncomeByMonth(qp );
 		System.out.println(d);
 	}
-
+	@Test
+	public void testArith(){
+		double a = -0.01;
+		double b =-0.05;
+		System.out.println(a+b);
+		System.out.println(0.01+0.05);
+		System.out.println(Arith.add(a, b));
+		System.out.println(0.01*0);
+		System.out.println(Arith.mul(0.01, 0));
+		System.out.println(Arith.sub(1,0.7));
+		System.out.println(Arith.sub(0, 0.01));
+	}
 }

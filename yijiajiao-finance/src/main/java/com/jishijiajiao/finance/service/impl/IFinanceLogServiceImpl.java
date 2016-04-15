@@ -29,6 +29,7 @@ import com.jishijiajiao.finance.entity.SystemStatus;
 import com.jishijiajiao.finance.entity.WaresSlave;
 import com.jishijiajiao.finance.entity.query.FinanceLogQuery;
 import com.jishijiajiao.finance.service.IFinanceLogService;
+import com.jishijiajiao.finance.util.Arith;
 import com.jishijiajiao.finance.util.Config;
 import com.jishijiajiao.finance.util.DateUtil;
 import com.jishijiajiao.finance.util.HttpClient;
@@ -64,10 +65,8 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			switch (financeLog.getCommodityType()) {
 			case 1:// 课程
 				double percentage = Config.getDouble("percentage");
-				financeLog.setTeacherIncome(financeLog.getTotalPrice()
-						* percentage);
-				financeLog.setSystemIncome(financeLog.getTotalPrice()
-						* (1 - percentage));
+				financeLog.setTeacherIncome(Arith.mul(financeLog.getTotalPrice(),percentage));//double值的精确运算
+				financeLog.setSystemIncome(Arith.mul(financeLog.getTotalPrice(),Arith.sub(1,percentage)));
 				boolean ifRefund = false;// 判断该订单是否涉及到退款
 				if (financeLog.getCurriculumType() != null
 						&& financeLog.getCurriculumType() == 0)
@@ -102,19 +101,16 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 					System.out.println("该用户无记录，进行记录添加" + moneyTimer);
 				} else {
 					moneyTimer.setUpdateTime(DateUtil.getNowTime());
-					moneyTimer.setVariableMoney(moneyTimer.getVariableMoney()
-							+ financeLog.getVariableMoneyChange());
-					moneyTimer.setWithdrawalCash(moneyTimer.getWithdrawalCash()
-							+ financeLog.getWithdrawalCashChange());
-					moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()
-							+ moneyTimer.getWithdrawalCash());
-					moneyTimer.setTotalSettleMoney(moneyTimer.getTotalSettleMoney()+financeLog.getWithdrawalCashChange());
+					moneyTimer.setVariableMoney(Arith.add(moneyTimer.getVariableMoney(),financeLog.getVariableMoneyChange()));
+					moneyTimer.setWithdrawalCash(Arith.add(moneyTimer.getWithdrawalCash(),financeLog.getWithdrawalCashChange()));
+					moneyTimer.setTotalMoney(Arith.add(moneyTimer.getVariableMoney(),moneyTimer.getWithdrawalCash()));
+					moneyTimer.setTotalSettleMoney(Arith.add(moneyTimer.getTotalSettleMoney(),financeLog.getWithdrawalCashChange()));
 					moneyTimerDAO.updateMoneyTimer(moneyTimer);
 					System.out.println("金额修改后：variableMoney="
 							+ moneyTimer.getVariableMoney()
 							+ " withdrawalCash="
 							+ moneyTimer.getWithdrawalCash() + "totalMoney="
-							+ moneyTimer.getTotalMoney());
+							+ moneyTimer.getTotalMoney()+"TotalSettleMoney="+moneyTimer.getTotalSettleMoney());
 				}
 				break;
 			case 2:// 答疑
@@ -128,8 +124,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 					answerTimerDAO.saveAnswerTimer(answerTimer);
 					System.out.println("该用户无记录，进行记录添加" + answerTimer);
 				} else {
-					double totalTime = answerTimer.getRemainTime()
-							+ financeLog.getTimeChange();
+					double totalTime =Arith.add(answerTimer.getRemainTime(),financeLog.getTimeChange()); 
 					answerTimer.setRemainTime(totalTime);
 					answerTimer.setUpdateTime(DateUtil.getNowTime());
 					answerTimerDAO.updateAnswerTimer(answerTimer);
@@ -147,61 +142,15 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 				this.resultBean.setFailMsg(SystemStatus.COMMODITYTYPE_NOT_NULL);
 				return this.resultBean;
 			}
-
 			financeLogDAO.saveFinanceLog(financeLog);// 保存财务记录
 			log.info("保存的财务记录数据==" + financeLog);
 			this.resultBean.setSucResult("保存成功！");
-			return this.resultBean;
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.resultBean.setFailMsg(SystemStatus.UNAUTHORIZED);
-			return this.resultBean;
+			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
 		}
+		return this.resultBean;
 	}
-
-/*	@Override
-	@Transactional
-	public ResultMapper insertDailySettleAccount(List<FinanceLog> financeLogs) {
-		try {
-			for (FinanceLog f : financeLogs) {
-				MoneyTimer moneyTimer = moneyTimerDAO.queryMoneyTimerByOpenId(f
-						.getSellOpenId());
-				if (moneyTimer == null) {
-					System.out.println("该账户没有金额记录 教师openid="
-							+ f.getSellOpenId());
-					continue;
-				}
-				if (moneyTimer.getVariableMoney() < f.getTotalPrice()) {
-					System.out.println("该账户可变金额小于划拨金额 取消划拨！教师openid="
-							+ f.getSellOpenId() + "variableMoney="
-							+ moneyTimer.getVariableMoney()
-							+ "variableMoneyChange=-" + f.getTotalPrice());
-					continue;
-				}
-				f.setFinanceLogsType(3);// 表示每日结算记录
-				if(f.getTradeTime() == null) f.setTradeTime(DateUtil.getNowTime());
-				double moneyChange = f.getTotalPrice()
-						* Config.getDouble("percentage");
-				f.setVariableMoneyChange(0 - moneyChange);
-				f.setWithdrawalCashChange(moneyChange);
-
-				moneyTimer.setUpdateTime(DateUtil.getNowTime());
-				moneyTimer.setVariableMoney(moneyTimer.getVariableMoney()
-						+ f.getVariableMoneyChange());
-				moneyTimer.setWithdrawalCash(moneyTimer.getWithdrawalCash()
-						+ f.getWithdrawalCashChange());
-				// 每日结算总金额不变
-				moneyTimerDAO.updateMoneyTimer(moneyTimer);
-				financeLogDAO.saveFinanceLog(f);
-			}
-			this.resultBean.setSucResult(null);
-			return this.resultBean;
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.resultBean.setFailMsg(SystemStatus.UNAUTHORIZED);
-			return this.resultBean;
-		}
-	}*/
 
 	@Override
 	@Transactional
@@ -220,33 +169,23 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			financeLog.setCurriculumType(financeLog3.getCurriculumType());
 			System.out.println("currculumType=="+financeLog.getCurriculumType());
 			double totalPrice = financeLog.getTotalPrice();
-			financeLog.setVariableMoneyChange(0 - totalPrice
-					* Config.getDouble("percentage"));
+			financeLog.setVariableMoneyChange(Arith.sub(0, Arith.mul(totalPrice, Config.getDouble("percentage"))));
 			financeLog.setTeacherIncome(financeLog.getVariableMoneyChange());
-			financeLog.setSystemIncome(0-(totalPrice*(1-Config.getDouble("percentage"))));
-			MoneyTimer moneyTimer = moneyTimerDAO
-					.queryMoneyTimerByOpenId(financeLog.getSellOpenId());
+			financeLog.setSystemIncome(Arith.sub(0, Arith.mul(totalPrice,Arith.sub(1,Config.getDouble("percentage")))));
+			MoneyTimer moneyTimer = moneyTimerDAO.queryMoneyTimerByOpenId(financeLog.getSellOpenId());
 			if (moneyTimer == null){
-				//this.resultBean.setFailMsg(SystemStatus.VARIABLEMONEY_NOT_ENOUGH);
-				//return this.resultBean;
 				moneyTimer = new MoneyTimer();
 				moneyTimer.setOpenId(financeLog.getSellOpenId());
-				moneyTimer.setVariableMoney(moneyTimer.getVariableMoney()
-						+ financeLog.getVariableMoneyChange());// 日志里存的负值所以直接加
-				moneyTimer.setTotalMoney(moneyTimer.getTotalMoney()
-						+ financeLog.getVariableMoneyChange());
+				moneyTimer.setVariableMoney(Arith.add(moneyTimer.getVariableMoney(),financeLog.getVariableMoneyChange()));// 日志里存的负值所以直接加
+				moneyTimer.setTotalMoney(Arith.add(moneyTimer.getTotalMoney(),financeLog.getVariableMoneyChange()));
 				moneyTimer.setUpdateTime(DateUtil.getNowTime());
 				moneyTimerDAO.saveMoneyTimer(moneyTimer);
 			}else{
-				moneyTimer.setVariableMoney(moneyTimer.getVariableMoney()
-						+ financeLog.getVariableMoneyChange());// 日志里存的负值所以直接加
-				moneyTimer.setTotalMoney(moneyTimer.getTotalMoney()
-						+ financeLog.getVariableMoneyChange());
+				moneyTimer.setVariableMoney(Arith.add(moneyTimer.getVariableMoney(),financeLog.getVariableMoneyChange()));// 日志里存的负值所以直接加
+				moneyTimer.setTotalMoney(Arith.add(moneyTimer.getTotalMoney(),financeLog.getVariableMoneyChange()));
 				moneyTimer.setUpdateTime(DateUtil.getNowTime());
 				moneyTimerDAO.updateMoneyTimer(moneyTimer);
 			}
-
-
 			log.info("保存数据：moneyTimer===="+moneyTimer);
 			log.info("保存数据：financeLog===="+financeLog);
 
@@ -286,7 +225,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			}
 
 			answerTimer.setUpdateTime(DateUtil.getNowTime());
-			answerTimer.setRemainTime(remainTime - financeLog.getTimeChange());
+			answerTimer.setRemainTime(Arith.sub(remainTime,financeLog.getTimeChange()));
 			answerTimerDAO.updateAnswerTimer(answerTimer);
 			financeLogDAO.saveFinanceLog(financeLog);
 			this.resultBean.setSucResult("保存成功！");
@@ -297,81 +236,6 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			return this.resultBean;
 		}
 	}
-
-/*	@Override
-	@Transactional
-	public ResultMapper addWithdrawsCashLog(FinanceLog financeLog) {
-		try {
-			financeLog.setFinanceLogsType(4);// 表示账户提现记录
-			if(financeLog.getTradeTime() == null)financeLog.setTradeTime(DateUtil.getNowTime());
-
-			financeLog.setSellOpenId(financeLog.getOpenId());// 这里将教师的openId存入sellOpenId,方便查询
-			financeLog.setOpenId(null);
-
-			MoneyTimer moneyTimer = moneyTimerDAO
-					.queryMoneyTimerByOpenId(financeLog.getSellOpenId());
-			if (moneyTimer == null || moneyTimer.getWithdrawalCash()< financeLog.getTeacherOutput()){
-				this.resultBean.setFailMsg(SystemStatus.REMAINMONEY_NOT_ENOUGH);
-				return this.resultBean;
-			}
-			double withdrawalCash = moneyTimer.getWithdrawalCash();
-			moneyTimer.setUpdateTime(DateUtil.getNowTime());
-			moneyTimer.setWithdrawalCash(withdrawalCash
-					- financeLog.getTeacherOutput());
-			moneyTimer.setTotalMoney(moneyTimer.getVariableMoney()
-					+ moneyTimer.getWithdrawalCash());
-
-			// 占位行 ：调用支付宝接口进行转账若成功 则进行记录保存
-
-			moneyTimerDAO.updateMoneyTimer(moneyTimer);
-			financeLogDAO.saveFinanceLog(financeLog);
-			System.out.println("提现后余额 : WithdrawalCash="
-					+ moneyTimer.getWithdrawalCash() + ",TotalMoney="
-					+ moneyTimer.getTotalMoney() + ",VariableMoney="
-					+ moneyTimer.getVariableMoney());
-			this.resultBean.setSucResult("保存成功！");
-			return this.resultBean;
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
-			return this.resultBean;
-		}
-	}
-*/
-/*	@Override
-	public ResultMapper getPersonalBills(String openId,int month,int pageNum, int pageSize) {
-		try{
-			if(month== 0) {//如果月份为空，则查询当月的数据
-				Calendar cal = Calendar.getInstance();
-				month = cal.get(Calendar.MONTH)+1;
-			}
-			
-			FinanceLogQuery financeLog = new FinanceLogQuery();
-			financeLog.setOpenId(openId);
-			financeLog.setFinanceLogsType(1);
-			financeLog.setMonth(month);
-			List<FinanceLog> list = financeLogDAO.queryFinanceLogsByConditions(financeLog);
-			if(list.size()==0){
-				this.resultBean.setFailMsg(SystemStatus.ID_NOT_FOUND);
-				return this.resultBean;
-			}
-			Page<FinanceLog> page = new Page<FinanceLog>();
-			page.setPageSize(pageSize);
-			page.setPageNum(pageNum);
-			page.setTotalCount(list.size());
-			page.setPageCount((page.getTotalCount()-1)/pageSize+1);
-			financeLog.setBegin(pageSize*(pageNum-1));
-			financeLog.setSize(pageSize);
-			list = financeLogDAO.queryFinanceLogsByConditions(financeLog);
-			page.setResults(list);
-			this.resultBean.setSucResult(page);
-			return this.resultBean;
-		}catch(Exception e){
-			e.printStackTrace();
-			this.resultBean.setFailMsg(SystemStatus.SERVER_ERROR);
-			return this.resultBean;
-		}
-	}*/
 
 	@Override
 	@Transactional
@@ -421,7 +285,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			System.out.println("teacher_income========="+(income1+income2));
 			FinanceLog flg = new FinanceLog();
 			flg.setOpenId(openId);
-			flg.setTeacherIncome(income1+income2);
+			flg.setTeacherIncome(Arith.add(income1, income2));
 			financeLogs.add(flg);
 		}
 		return financeLogs;
@@ -459,10 +323,10 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 			
 			List<FinanceLog> conditions = financeLogDAO.queryTeacherTradeLogs(flq);
 			List<FinanceBean> financeBeans = new ArrayList<FinanceBean>();
-			Double totalIncome=0.0;//收入总和
-			Double totalRefund=0.0;//退款总和
-			Double totalTeacherIncome=0.0; //教师部分总和
-			Double totalSytemIncome=0.0;//平台总和
+			double totalIncome=0.0;//收入总和
+			double totalRefund=0.0;//退款总和
+			double totalTeacherIncome=0.0; //教师部分总和
+			double totalSytemIncome=0.0;//平台总和
 			for(FinanceLog fl : conditions){
 				FinanceBean financeBean = new FinanceBean();
 				financeBean.setOpenId(fl.getSellOpenId());
@@ -499,13 +363,14 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 				financeBean.setTeacherIncome(fl.getTeacherIncome());
 				financeBean.setSystemIncome(fl.getSystemIncome());
 				if(fl.getFinanceLogsType()==1){
-					totalIncome+=fl.getTotalPrice();
+					totalIncome=Arith.add(totalIncome, fl.getTotalPrice());
 				}else if(fl.getFinanceLogsType()==2){
-					totalRefund-=fl.getTotalPrice();
+					totalRefund=Arith.sub(totalRefund, fl.getTotalPrice());
 				}
 				financeBean.setFinanceLogsType(fl.getFinanceLogsType());
-				totalTeacherIncome+=fl.getTeacherIncome();
-				totalSytemIncome+=fl.getSystemIncome();
+				totalTeacherIncome=Arith.add(totalTeacherIncome, fl.getTeacherIncome());
+				totalSytemIncome=Arith.add(totalSytemIncome, fl.getSystemIncome());
+				System.out.println("totalIncome="+totalIncome+",totalRefund="+totalRefund+",totalTeacherIncome="+totalTeacherIncome+",totalSystemIncome="+totalSytemIncome);
 				financeBeans.add(financeBean);
 			}
 			if(flq.getRay()==0){
@@ -514,6 +379,7 @@ public class IFinanceLogServiceImpl implements IFinanceLogService {
 				Collections.sort(financeBeans, new sortByDateDesc1());
 			}
 			FinanceBean financeBean = new FinanceBean();
+			System.out.println("totalIncome="+totalIncome+",totalRefund="+totalRefund+",totalTeacherIncome="+totalTeacherIncome+",totalSystemIncome="+totalSytemIncome);
 			financeBean.setTotalIncome(totalIncome);
 			financeBean.setTotalRefund(totalRefund);
 			financeBean.setTotalTeacherIncome(totalTeacherIncome);
